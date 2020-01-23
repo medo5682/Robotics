@@ -43,7 +43,12 @@ void turn_180_drive(current_state) {
   }
 }
 
-
+void rotate(current_state) {  
+    sparki.moveRight();
+    if(sparki.ping() < 30){
+          sparki.moveStop();
+      }
+}
 
 //void updateState(current_state) {
 //  //check if transition is met and return
