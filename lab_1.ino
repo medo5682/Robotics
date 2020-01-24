@@ -6,6 +6,13 @@
 #define STATE_FOLLOW_LINE
 #define STATE_STOP_BEEP_DROP
 
+/* LAB STEPS 
+1. The robot rotates in place until it detects an object within 30cm with its ultrasound sensor.
+2. The robot then drives to within 7cm of the detected object and captures it in its gripper. 
+3. Once the object is secured, the robot turns 180 degrees and drives until it detects a line. 
+4. Once it has found a line, the robot will follow it until reaching the "start" marker 
+5. at which point it stops, beeps, and drops the carried object. */
+
 // Set up some global variables with default values to be replaced during operation
 int current_state = STATE_ROTATE;
 const int threshold = 700; // IR reading threshold to detect whether there's a black line under the sensor
@@ -34,6 +41,21 @@ void readSensors() {
   }
 
 
+void rotate(current_state) {  
+    sparki.moveRight();
+    if(sparki.ping() < 30){
+          sparki.moveStop();
+      }
+}
+
+void drive_and_capture(current_state){
+  sparki.moveForward();
+  if(sparki.ping() < 7){
+    sparki.moveStop();
+    sparki.gripperClose();
+  }
+}
+
 void turn_180_drive(current_state) {
   sparki.moveRight(180); // rotate right 180 degrees
   if((line_center < threshold) && (line_left < threshold) && (line_right < threshold)){
@@ -43,11 +65,12 @@ void turn_180_drive(current_state) {
   }
 }
 
-void rotate(current_state) {  
-    sparki.moveRight();
-    if(sparki.ping() < 30){
-          sparki.moveStop();
-      }
+void line_to_start(current_state) {
+  break;
+}
+
+void stop_beep_drop(current_state){
+  break;
 }
 
 //void updateState(current_state) {
@@ -61,7 +84,7 @@ void loop() {
   readSensors(); // Read sensors once per loop() call
 
   sparki.clearLCD();
-  sparki.print("STATExx: ");
+  sparki.print("STATE: ");
   sparki.println(current_state);
 
   
