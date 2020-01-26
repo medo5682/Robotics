@@ -10,7 +10,7 @@
 
 // Set up some global variables with default values to be replaced during operation
 int current_state = STATE_ROTATE;
-const int threshold = 700; // IR reading threshold to detect whether there's a black line under the sensor
+const int threshold = 500; // IR reading threshold to detect whether there's a black line under the sensor
 int cm_distance = 1000;
 int lineLeft = 1000;
 int lineCenter = 1000;
@@ -24,7 +24,7 @@ void setup() {
   delay(1000); // Give the motor time to turn
   sparki.gripperOpen(); // Open the gripper
   delay(5000); // Give the motor time to open the griper
-//  sparki.gripperSt/op(); // 5 seconds should be long enough
+//  sparki.gripperStop(); // 5 seconds should be long enough
   sparki.RGB(RGB_GREEN); // Change LED to green so we know the robot's setup is done!
 }
 
@@ -36,15 +36,6 @@ void readSensors() {
 }
 
 
-void turn_180_drive(int current_state) {
-  sparki.moveRight(180); // rotate right 180 degrees
-  if((lineCenter < threshold) && (lineLeft < threshold) && (lineRight < threshold)){
-    sparki.moveForward();
-  } else {
-    sparki.moveStop();
-  }
-}
-
 void rotate() {  
     sparki.moveRight();
     if(cm_distance < 30 && cm_distance >0){
@@ -52,7 +43,7 @@ void rotate() {
           sparki.print(cm_distance);
           sparki.println("cm");
           current_state = STATE_DRIVE_AND_CAPTURE;
-          sparki.print("CHANGING STATE TO DRIVE");
+          sparki.print("CHANGING STATE TO");
           sparki.println(current_state);
           sparki.updateLCD();
           sparki.moveStop();
@@ -61,16 +52,14 @@ void rotate() {
 }
 
 void drive_and_capture() { 
-    sparki.println("DRIVE CALLED"); 
-    sparki.updateLCD();
-    if (cm_distance > 7){
+    if (cm_distance > 3){
       sparki.moveForward();  
     }
     else{
       sparki.moveStop();
       sparki.gripperClose();
       current_state = STATE_TURN_180_DRIVE;
-      sparki.print("CHANGING STATE TO STATE_TURN_180_DRIVE");
+      sparki.println("CHANGING STATE TO");
       sparki.println(current_state);
       sparki.updateLCD();
       delay(5000);
@@ -79,17 +68,27 @@ void drive_and_capture() {
 
 
 void turn_180_drive() {
-  sparki.moveRight(180); // rotate right 180 degrees
-  if((lineCenter < threshold) && (lineLeft < threshold) && (lineRight < threshold)){
-    sparki.moveForward();
-  } else {
-    current_state = STATE_FOLLOW_LINE;
-    sparki.moveStop();
-  }
+//  sparki.println("TURN 180 and DRIVE CALLED");
+//  sparki.updateLCD();
+//  sparki.print(lineCenter);
+//  sparki.print(lineLeft);
+//  sparki.println(lineRight);
+//  sparki.updateLCD();
+//  sparki.moveRight(180); // rotate right 180 degrees
+//  delay(1000);
+//  
+//  if((lineCenter > threshold) && (lineLeft > threshold) && (lineRight > threshold)){
+//    sparki.moveForward();
+//  } else {
+//    current_state = STATE_FOLLOW_LINE;
+//    
+//    sparki.moveStop();
+//  }
 }
 
 
 void line_to_start() {
+  sparki.println("LINE TO START");
   if ( lineLeft < threshold ) // if line is below left line sensor
   {  
     sparki.moveLeft(); // turn left
