@@ -76,47 +76,51 @@ void drive(){
   else {
     sparki.println("FOUND THE LINE");
     current_state = STATE_FOLLOW_LINE;
+    sparki.moveForward();
+    delay(500);
+    sparki.moveRight(90);
     sparki.updateLCD();
     sparki.moveStop();
   }
-  
 }
 
 
 void turn_180() {
-  sparki.println("TURN 180 and DRIVE CALLED");
-  sparki.updateLCD();
   sparki.moveRight(180); // rotate right 180 degrees
   current_state= STATE_DRIVE;
 }
 
 
 void line_to_start() {
-  sparki.println("LINE TO START");
+  sparki.println("FOLLOWING LINE TO START");
   sparki.println(lineLeft);
   sparki.println(lineRight);
   sparki.println(lineCenter);
   sparki.updateLCD();
-  delay(1000);
+
   if( (lineCenter <threshold) && (lineLeft <threshold) && (lineRight < threshold) ){
     current_state = STATE_STOP_BEEP_DROP;
-  }  
+  }
+  else{
+   
   
-  if ( lineLeft < threshold ) // if line is below left line sensor
-  {  
-    sparki.moveLeft(); // turn left
-  }
- 
-  if ( lineRight < threshold ) // if line is below right line sensor
-  {  
-    sparki.moveRight(); // turn right
-  }
- 
-  // if the center line sensor is the only one reading a line
-  if ( (lineCenter < threshold) && (lineLeft > threshold) && (lineRight > threshold) )
-  {
-    
-    sparki.moveForward(); // move forward
+    if ( lineLeft < threshold ) // if line is below left line sensor
+    {  
+      sparki.moveLeft(); // turn left
+    }
+   
+    if ( lineRight < threshold ) // if line is below right line sensor
+    {  
+      sparki.moveRight(); // turn right
+    }
+   
+    // if the center line sensor is the only one reading a line
+    if ( (lineCenter < threshold) && (lineLeft > threshold) && (lineRight > threshold) )
+    {
+      
+      sparki.moveForward(); // move forward
+    }
+  
   }
   
   delay(100); // wait 0.1 seconds
@@ -143,7 +147,6 @@ void loop() {
   sparki.clearLCD();
   sparki.print("STATE: ");
   sparki.println(current_state);
-  sparki.updateLCD();
 
 
   // Your state machine code goes here
