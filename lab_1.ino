@@ -51,7 +51,7 @@ void rotate() {
 }
 
 void drive_and_capture() { 
-    if (cm_distance > 3){
+    if (cm_distance > 7){
       sparki.moveForward();  
     }
     else{
