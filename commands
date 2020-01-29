@@ -6,6 +6,6 @@ sudo ln -s libreadline.so.7.0 libreadline.so.6
 Directory:  /lib/x86_64-linux-gnu/
 
 Add user to group
-sudo usermod -a -G dialout medo
+sudo usermod -a -G dialout <username>
 
 
