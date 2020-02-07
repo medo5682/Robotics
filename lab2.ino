@@ -46,7 +46,7 @@ void measure_30cm_speed() {
     sparki.updateLCD();
     current_state = CONTROLLER_FOLLOW_LINE;
     type_move = MOVE_STOP;
-    speed_30 = (.3/(tot_time/1000));
+    speed_30 = (.3/(tot_time/1000)); //m/s
     sparki.print("speed: ");
     sparki.println(speed_30);
     sparki.updateLCD();
@@ -104,29 +104,34 @@ void updateOdometry() {
   //xi = cos(theta) * (v) = v
   //yi = sin(theta) * (v) = 0
   //theta = (2v)/d
+  sparki.print("move type: ");
+  sparki.println(type_move);
+  sparki.updateLCD();
   if (type_move == MOVE_FORWARD){
-    d_x = speed_30*.1;
+    d_x = (speed_30*100)*0.1; //cm/s
+    sparki.print("d_x");
+    sparki.println(d_x);
     pose_x = pose_x + d_x;
   }
   if (type_move == MOVE_RIGHT) {
     //pr = 0.003;
     //r = (8/3.1415926535);
-    wheel_sep_r = (8.7/2);
-    d_theta = (2*speed_30)/wheel_sep_r;
+    wheel_sep_r = (8.7/2); //cm
+    d_theta = ((2*speed_30))/(wheel_sep_r*10);
     pose_theta = pose_theta + d_theta;
   }
   if (type_move == MOVE_LEFT) {
     //pr = 0.003;
     //r = (8/3.1415926535);
     wheel_sep_r = (8.7/2);
-    d_theta = (2*speed_30)/wheel_sep_r;
+    d_theta = (2*speed_30)/(wheel_sep_r*10);
     pose_theta = pose_theta - d_theta;
   }
   displayOdometry();
 }
 
 void displayOdometry() {
-  sparki.clearLCD();
+  //sparki.clearLCD();
   sparki.print("pose x:");
   sparki.println(pose_x);
   sparki.print("pose y:");
