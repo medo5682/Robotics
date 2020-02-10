@@ -94,69 +94,27 @@ void lineFollow() {
 
 
 void updateOdometry() {
-  // TODO
-  //speed_30 = v = r * theta_l/r
-  //xi = cos(theta) * (v) = v
-  //yi = sin(theta) * (v) = 0
-  //theta = (2v)/d
 
-  
-  
-//  if (type_move == MOVE_FORWARD){
-//    d_x = cos(pose_theta)*(speed_30*100)*0.1; //cm/s
-//    sparki.print("d_x");
-//    sparki.println(d_x);
-//    pose_x = pose_x + d_x;
-//  }
-//  if (type_move == MOVE_RIGHT) {
-//    //pr = 0.003;
-//    //r = (8/3.1415926535);
-//    wheel_sep_r = (8.7/2); //cm
-//    d_theta = ((2*speed_30))/(wheel_sep_r*10);
-//    pose_theta = pose_theta + d_theta;
-//  }
-//  if (type_move == MOVE_LEFT) {
-//    //pr = 0.003;
-//    //r = (8/3.1415926535);
-//    wheel_sep_r = (8.7/2);
-//    d_theta = (2*speed_30)/(wheel_sep_r*10);
-//    pose_theta = pose_theta - d_theta;
-//  }
-
-  wheel_sep_r = (0.087/2);//                                          m/s    * 100 cm/m  * cycle time
+  wheel_sep_r = 0.087;//                                          m/s    * 100 cm/m  * cycle time
   d_x = cos(pose_theta) * speed_30*100 * CYCLE_TIME;// equivalent to (speed_30 * 100) *    0.1
   d_y = sin(pose_theta) * speed_30*100 * CYCLE_TIME;
   if (type_move == MOVE_FORWARD){
     d_theta=0;
   }
   else if(type_move == MOVE_LEFT){
-     d_theta = (2*speed_30*100*CYCLE_TIME)/(wheel_sep_r*100);
+     d_theta = ((2*speed_30*100)/(wheel_sep_r*100))*CYCLE_TIME;
      pose_theta += d_theta;
   }
   else if (type_move == MOVE_RIGHT){
-    d_theta =   (2*speed_30*100*CYCLE_TIME)/(wheel_sep_r*100);
+    d_theta =   ((2*speed_30*100)/(wheel_sep_r*100))*CYCLE_TIME;
     pose_theta -= d_theta; 
   }
-
-
 
   pose_x += d_x;
   pose_y += d_y;
   displayOdometry();
 }
 
-void checkForStart(){
-
-  if ((line_left<threshold) && (line_right<threshold)&& (line_center<threshold)){
-      sparki.println("START");
-      sparki.updateLCD();
-      pose_x = 0;
-      pose_y = 0;
-      pose_theta= 0;
-      sparki.moveForward(1);
-  }
-  
-}
 
 void displayOdometry() {
   sparki.clearLCD();
@@ -179,7 +137,6 @@ void loop() {
   
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
-//      checkForStart();
       lineFollow();
       updateOdometry();
       break;
