@@ -6,8 +6,8 @@ During the delay(100) statement, the robot continuously operates motors in whate
 ### 2. What happens if each call to “loop()” takes longer than 100ms? What effect does this have on your position estimation, and why? ###
 If each call to "loop()" takes longer than 100ms, the calculations for determining speed would be incorrect. 
 If the speed is incorrect, then the calculations for updating odometry would be slightly off, which introduces even more error into the system.
-It introduces more error becacuse we utilize the speed calculation when determing the x and y coordinate changes with the equations *d_x = cos(pose_theta) * speed_30*100 * CYCLE_TIME* and * d_y = sin(pose_theta) * speed_30*100 * CYCLE_TIME* 
-TODO - this probs isn't exactly how we want to word it, i just wrote a basic idea :) 
+It introduces more error becacuse we utilize the speed calculation when determing the x and y coordinate changes with the equations *d_x = cos(pose_theta) * speed_30*100 * CYCLE_TIME* and * d_y = sin(pose_theta) * speed_30*100 * CYCLE_TIME*. As both of these equations use the speed (and thus the loop time), even being off by a few milliseconds could really skew the final x and y position results.
+
 
 ### 3. What is Sparki’s average speed (in m/s) when covering the 30cm distance from Part 1? ###
 Sparki's average speed is calculated to be approximately 0.02775 m/s  when covering the 30 cm distance.
@@ -28,9 +28,7 @@ We implemented loop closure in our controller by using the line following code f
 Benjamin Morris, Meghan Donohoe, and Gayathri Gude
 
 ### 9. Roughly how much time did you spend programming this lab? ###
-5 hours? 2 labs plus on our own? idk 
-Benji: I worked on it for maybe 2.5 hours on my own. 
-
+Between the time spent in the lab both weeks and the time the group members spent coding and debugging, we spent roughly 7 hours programming this lab.
 
 ### 10. Does your implementation work as expected? If not, what problems do you encounter? ###
-Uur implementation does work as expected. When sparki turns 90 degrees to the right from the x axis, the theta pose changes to 1.57, the x pose stops changing, and the y pose increases as expected. However, over time errors accumulate due to slippage or, as shown in the video, sparki's loose left wheel. 
+Our implementation does work as expected. When sparki turns 90 degrees to the right from the x axis, the theta pose changes to 1.57, the x pose stops changing, and the y pose increases as expected. However, over time errors accumulate due to slippage or, as shown in the video, sparki's loose left wheel. 
