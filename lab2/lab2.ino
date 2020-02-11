@@ -21,15 +21,16 @@ int line_center = 1000;
 int line_right = 1000;
 
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
-float time_1, time_2, tot_time, time_start, time_end, final_time, tim;
-float d_x,d_y, pr, r, wheel_sep_r, d_theta;
+double time_1, time_2, tot_time, time_start, time_end, final_time, tim;
+double d_x,d_y, pr, r, wheel_sep_r, d_theta;
 double speed_30 = 0.0277520814; // m/s
+//double speed_30;
 
 void setup() {
   pose_x = 0.;
   pose_y = 0.;
   pose_theta = 0.;
-  time_1 = (double)millis();
+//  time_1 = (double)millis();
 }
 
 void readSensors() {
@@ -41,14 +42,11 @@ void readSensors() {
 void measure_30cm_speed() {
   if ((line_left < threshold) && (line_right < threshold) && (line_center < threshold)){
     sparki.moveStop();
-    time_2 = (double)millis();
-    tot_time = (double)((time_2 - time_1)/1000.0); //in seconds
+    time_2 = millis();
+    tot_time = time_2/1000.0; //in seconds
     sparki.clearLCD();
-    sparki.println(tot_time);
-    sparki.updateLCD();
     current_state = CONTROLLER_FOLLOW_LINE;
-    double distance = 0.30;
-    speed_30 = (double)(distance/tot_time); //m/s
+    speed_30 = 30.0/tot_time; //m/s
     sparki.print("speed: ");
     sparki.println(speed_30);
     sparki.updateLCD();    
@@ -61,11 +59,11 @@ void measure_30cm_speed() {
 void lineFollow() {  
 
   if ((line_left<threshold) && (line_right<threshold)&& (line_center<threshold)){
-      sparki.println("START");
-      sparki.updateLCD();
-      pose_x = 0;
-      pose_y = 0;
-      pose_theta= 0;
+//      sparki.println("START");
+//      sparki.updateLCD();
+//      pose_x = 0;
+//      pose_y = 0;
+//      pose_theta= 0;
       sparki.moveForward();
       type_move = MOVE_FORWARD;
   }
