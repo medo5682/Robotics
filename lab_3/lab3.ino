@@ -13,9 +13,6 @@
 #define FWD 1
 #define NONE 0
 #define BCK -1
-//#define MOVE_FORWARD 2
-//#define MOVE_LEFT 3
-//#define MOVE_RIGHT 4
 
 
 // Line following configuration variables
@@ -121,33 +118,37 @@ void headingError() {
   current_state = CONTROLLER_GOTO_POSITION_PART3;
 }
 
+void inverseKinematics() {
+  phi_l = ((2*ROBOT_SPEED) - (AXLE_DIAMETER * d_theta))/(2*WHEEL_RADIUS);
+  phi_r = ((2*ROBOT_SPEED) + (AXLE_DIAMETER * d_theta))/(2*WHEEL_RADIUS);
+}
+
 
 void updateOdometry() {
   // TODO: Update pose_x, pose_y, pose_theta
 
-//  wheel_sep_r = AXLE_DIAMETER;                                     
-//  d_x = cos(pose_theta) * ROBOT_SPEED*100 * CYCLE_TIME;// equivalent to (speed_30 * 100) *    0.1
-//  d_y = sin(pose_theta) * ROBOT_SPEED*100 * CYCLE_TIME;
-//  if (type_move == MOVE_FORWARD){
-//    d_theta=0;
-//  }
-//  else if(type_move == MOVE_LEFT){
-//     d_theta = ((2*speed_30*100)/(wheel_sep_r*100))*CYCLE_TIME;
-//     pose_theta += d_theta;
-//  }
-//  else if (type_move == MOVE_RIGHT){
-//    d_theta =   ((2*speed_30*100)/(wheel_sep_r*100))*CYCLE_TIME;
-//    pose_theta -= d_theta; 
-//  }
-//
-//  pose_x += d_x;
-//  pose_y += d_y;
-//
-//  // Bound theta
-//  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-//  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
-//  
-//  displayOdometry();
+  wheel_sep_r = AXLE_DIAMETER;                                     
+  d_x = cos(pose_theta) * ROBOT_SPEED*100 * CYCLE_TIME;// equivalent to (speed_30 * 100) *    0.1
+  d_y = sin(pose_theta) * ROBOT_SPEED*100 * CYCLE_TIME;
+  d_theta = 0;
+
+  if(left_wheel_rotating == 1){
+     d_theta = ((2*ROBOT_SPEED*100)/(wheel_sep_r*100))*CYCLE_TIME;
+     pose_theta += d_theta;
+  }
+  else if (right_wheel_rotating == 1){
+    d_theta =   ((2*ROBOT_SPEED*100)/(wheel_sep_r*100))*CYCLE_TIME;
+    pose_theta -= d_theta; 
+  } 
+
+  pose_x += d_x;
+  pose_y += d_y;
+
+  // Bound theta
+  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+  
+  displayOdometry();
 }
 
 void displayOdometry() {
@@ -206,7 +207,7 @@ void loop() {
       // TODO: Implement solution using moveLeft, moveForward, moveRight functions
       // This case should arrest control of the program's control flow (taking as long as it needs to, ignoring the 100ms loop time)
       // and move the robot to its final destination
-      //displayOdometry();
+      
       bearingError();
       positionError();
       headingError();
