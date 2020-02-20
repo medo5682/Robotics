@@ -144,7 +144,7 @@ void find_speed_theta() {
   if (xr > 0.01){
     xr = 0.01;
   }
-  theta_dot = 0.1 * b_err  + 0.01 * h_err;
+  theta_dot = 0.1 / d_err * b_err  + 0.01 / d_err * h_err;
 }
 
 void checkStop(){
@@ -163,16 +163,16 @@ void updateOdometry() {
   dX = ((cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct);// m/s
   dY = ((sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct); //m/s
 
-  float left = 0;
-  if (left_wheel_rotating){
+  float left = 0;// if not rotating
+  if (left_wheel_rotating == 1){//else update
     left = (ROBOT_SPEED * CYCLE_TIME * left_speed_pct) / AXLE_DIAMETER;
   }
   float right = 0;
-  if (right_wheel_rotating) {
+  if (right_wheel_rotating == 1) {
     right = (ROBOT_SPEED * CYCLE_TIME * right_speed_pct) / AXLE_DIAMETER;
   }
 
-  if (left_dir == DIR_CW){
+  if (left_dir == DIR_CW){// going backwards, reverse sign. 
     left *= -1;
   }
   if (right_dir == DIR_CCW){
@@ -242,8 +242,8 @@ void loop() {
         left_speed_pct = 1;
         right_speed_pct = 1;
         
-        sparki.motorRotate(MOTOR_LEFT, left_dir, left_speed_pct*60);
-        sparki.motorRotate(MOTOR_RIGHT, right_dir, right_speed_pct*60);
+        sparki.motorRotate(MOTOR_LEFT, left_dir, left_speed_pct*100);
+        sparki.motorRotate(MOTOR_RIGHT, right_dir, right_speed_pct*100);
         
       } else if (line_right < threshold) {
         // move right
@@ -291,12 +291,14 @@ void loop() {
       checkStop();
       find_speed_theta();
       inverseKinematics();
+
+      // scale wheel speed percentages by largest phi
       float denominator= phi_r;
       if (phi_l >= phi_r){
         denominator = phi_l;
       }
       
-      left_speed_pct = phi_l/denominator; // scale wheel percentages by theta speeds
+      left_speed_pct = phi_l/denominator; 
       right_speed_pct = phi_r/denominator;
       
       left_dir = DIR_CCW;
@@ -304,19 +306,20 @@ void loop() {
         left_dir = DIR_CW;
       }
       right_dir = DIR_CW;
-      if (phi_r <0) {    // negative right phi -> moving right wheel backwards
+      if (phi_r < 0) {    // negative right phi -> moving right wheel backwards
         right_dir = DIR_CCW;
       }
 
-      if (left_speed_pct> 0){
+      //set that the wheels are rotating so theta updates
+      if (left_speed_pct > 0){
         left_wheel_rotating = 1;
       }
-      if (right_speed_pct> 0){
+      if (right_speed_pct > 0){
         right_wheel_rotating = 1;
       }
 
-      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
-      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
+      sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
+      sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
       
       break;
   }
