@@ -46,7 +46,7 @@ const float distance_gain = 1.;
 const float theta_gain = 1.;
 float dX  = 0., dTheta = 0., dY = 0.;
 
-float wheel_sep_r, xr, theta_dot;
+float xr, theta_dot;
 
 float to_radians(double deg) {
   return  deg * 3.1415/180.;
@@ -103,21 +103,22 @@ void positionError() {
 }
 
 void calcBearingError(){
-  b_err = to_radians(atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - to_degrees(dest_pose_theta));  //radians
+  //atan2f returns radians, dest_pose_theta is in radians
+  b_err = atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - dest_pose_theta;  //radians
 }
 
 void bearingError() {
   sparki.println("In bearing Error");
   sparki.updateLCD();
   calcBearingError();
-  sparki.moveLeft(b_err);
+  sparki.moveLeft(to_degrees(b_err));
   delay(1000);
   dest_pose_theta = to_radians(dest_pose_theta);
   pose_theta = dest_pose_theta;
 }
 
 void calcHeadingError(){
-  h_err = to_radians(to_degrees(dest_pose_theta) - pose_theta);
+  h_err = dest_pose_theta - pose_theta;
 }
  
 void headingError() {
@@ -126,7 +127,7 @@ void headingError() {
   sparki.println("In heading error");
   sparki.updateLCD();
    
-  sparki.moveRight(to_degrees(dest_pose_theta) - pose_theta);
+  sparki.moveRight(to_degrees(dest_pose_theta) - to_degrees(pose_theta));
   delay(3000);
   
   pose_theta = dest_pose_theta;
@@ -139,45 +140,49 @@ void inverseKinematics() {
 }
 
 void find_speed_theta() {
-  xr = d_err * 0.1;
-  if (xr > 100){
-    xr = 100;
+  xr = d_err*0.01; 
+  if (xr > 0.01){
+    xr = 0.01;
   }
   theta_dot = 0.1 * b_err  + 0.01 * h_err;
+}
+
+void checkStop(){
+  if (d_err <0.01 && to_degrees(h_err)<5){
+    sparki.moveStop();
+    left_speed_pct = 0;
+    right_speed_pct = 0;
+    current_state = -2;
+  }
 }
 
 
 void updateOdometry() {
   // TODO: Update pose_x, pose_y, pose_theta
-
-  wheel_sep_r = AXLE_DIAMETER;    
                                    
-  dX = cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME;// m/s
-  if (left_speed_pct == right_speed_pct){
-    dX  *= left_speed_pct;
-  }
-  dY = sin(pose_theta) * ROBOT_SPEED* CYCLE_TIME; //m/s
+  dX = ((cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct);// m/s
+  dY = ((sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct); //m/s
 
-  if((left_wheel_rotating == 1) && (left_dir == DIR_CCW)){
-     dTheta = ((ROBOT_SPEED*left_speed_pct)/(wheel_sep_r))*CYCLE_TIME;
-     pose_theta -= dTheta;
+  float left = 0;
+  if (left_wheel_rotating){
+    left = (ROBOT_SPEED * CYCLE_TIME * left_speed_pct) / AXLE_DIAMETER;
   }
-  else if((left_wheel_rotating == 1) && (left_dir == DIR_CW)){
-     dTheta = ((ROBOT_SPEED*left_speed_pct)/(wheel_sep_r))*CYCLE_TIME;
-     pose_theta += dTheta;
+  float right = 0;
+  if (right_wheel_rotating) {
+    right = (ROBOT_SPEED * CYCLE_TIME * right_speed_pct) / AXLE_DIAMETER;
   }
-  
-  if ((right_wheel_rotating == 1) && (right_dir == DIR_CCW)){
-    dTheta =   ((ROBOT_SPEED*right_speed_pct)/(wheel_sep_r))*CYCLE_TIME;
-    pose_theta -= dTheta; 
-  } 
-  else if ((right_wheel_rotating == 1) && (right_dir == DIR_CW)){
-    dTheta =   ((ROBOT_SPEED*right_speed_pct)/(wheel_sep_r))*CYCLE_TIME;
-    pose_theta += dTheta; 
-  } 
+
+  if (left_dir == DIR_CW){
+    left *= -1;
+  }
+  if (right_dir == DIR_CCW){
+    right *= -1;
+  }
+  dTheta = right-left;
 
   pose_x += dX;
   pose_y += dY;
+  pose_theta += dTheta;
 
   // Bound theta
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
@@ -204,9 +209,9 @@ void displayOdometry() {
   sparki.print(dX );
   sparki.print("   dT: ");
   sparki.println(dTheta);
-  sparki.print("phl: "); sparki.print((int)phi_l); sparki.print(" phr: "); sparki.println((int)phi_r);
-  sparki.print("p: "); sparki.print((int)d_err); sparki.print(" a: "); sparki.println((int)to_degrees(b_err));
-  sparki.print("h: "); sparki.println((int)to_degrees(h_err));
+  sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
+  sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
+  sparki.print("h: "); sparki.println(to_degrees(h_err));
 }
 
 void loop() {
@@ -283,27 +288,31 @@ void loop() {
       calcDistanceError();
       calcBearingError();
       calcHeadingError();
+      checkStop();
       find_speed_theta();
       inverseKinematics();
-      float denominator;
+      float denominator= phi_r;
       if (phi_l >= phi_r){
         denominator = phi_l;
       }
-      else{
-        denominator = phi_r;
-      }
+      
       left_speed_pct = phi_l/denominator; // scale wheel percentages by theta speeds
       right_speed_pct = phi_r/denominator;
-
+      
+      left_dir = DIR_CCW;
       if (phi_l < 0) {   // negative left phi -> moving left wheel backwards
         left_dir = DIR_CW;
-      } else {           // positive right phi -> moving right wheel forwards
-        left_dir = DIR_CCW;
       }
+      right_dir = DIR_CW;
       if (phi_r <0) {    // negative right phi -> moving right wheel backwards
         right_dir = DIR_CCW;
-      } else {           // positive right phi -> moving right wheel forwards
-        right_dir = DIR_CW;
+      }
+
+      if (left_speed_pct> 0){
+        left_wheel_rotating = 1;
+      }
+      if (right_speed_pct> 0){
+        right_wheel_rotating = 1;
       }
 
       sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
