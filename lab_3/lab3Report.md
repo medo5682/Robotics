@@ -1,6 +1,7 @@
 # Lab 3 Report #
 
 ### 1. Describe one condition where your controller from Part 2 might fail. ###
+One condition where out controller from part 2 might fail could be when 
 ### 2. What is the role of the position error? ###
 ### 3. What is the role of the heading error? ###
 ### 4. Why include bearing error? ###
