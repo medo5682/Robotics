@@ -20,9 +20,7 @@ Essentially, we implemented our feedback controller by first calculating our pos
 ### 7. What are the equations for the final controller from your implementation? What are your equations for 𝜃𝑟 ′ 𝑎nd 𝑥𝑟′ in your feedback controller? ###
 
 ### 8. What happens if you alter your gain constants (the 0.1 and 0.01 values in Part 3.1, 3.2)? ###
-If you alter the gain constants, you are altering the size of the change in position and change in rotation that Sparki uses in order to move toward the goal position at each time step. 
-
-Specifically if you alter the gain constant to 0.1, then you will have an increase in the values for the change in position and rotation at each iteration. Likewise, if you alter the gain constant to 0.01, you will have a decrease in the values for the change in position and rotation at each iteration. 
+If you alter the gain constants, you are altering the size of the change in position and change in rotation that Sparki uses in order to move toward the goal position at each time step. Specifically if you alter the gain constant to 0.1, then you will have an increase in the values for the change in position and rotation at each iteration. Likewise, if you alter the gain constant to 0.01, you will have a decrease in the values for the change in position and rotation at each iteration. 
 
 ### 9. What happens if you increase these gain constants? What if they become too large? ###
 If you increase the gain constants, then the amount that the robot changes in position and rotation at each time step increases, so it will increase the values for phi_l and phi_r, increasing the speed of the robot. If these gain constants for the change in position becomes too large, then the theta_dot could become neglegible and be ignored by the robot. If both of these gain constants become too large, then the robot will over-shoot the goal position in both angle and distance and will get stuck and not be able to converge to the final position and stop moving. 
