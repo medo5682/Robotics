@@ -31,7 +31,8 @@ If an obstacle was between the robot and its goal, the robot would hit this obst
 ### 11. (Briefly) How would you implement simple obstacle avoidance using the ultrasonic sensor? ###
 In order to implement simple obstacle avoidance using the ultrasonic sensor, we could have a check before the errors are calculated to see if anything is currently in the robots path. If it is, then choose a different direction, calculate the errors using that direction, and move there so the obstacle does not obscure the path anymore.
 
-### 12. Describe what would happen if the obstacle-avoiding robot encountered a U-shaped object like this ###
+### 12. Describe what would happen if the obstacle-avoiding robot encountered a U-shaped object like this ### 
+If the obstacle-avoiding robot encountered a U-Shaped object like the one shown below... The robot would continue to head in the same direction as it originally would have to reach its destination. However, once it was "x" amount of cm from the obstacle, it would stop moving forward. Now, the robot would rotate "y" amount of degrees until it no longer detected the obstacle in its way. In would continue to move forward and check for the obstacle till it got around the edge of the obstacle. Once it successfuly moves to a point past the obstacle, it would then move in a straight line till it reached the destination. 
 
 ### 13. What is the name of your team? ###
 Team Neptr
