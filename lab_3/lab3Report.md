@@ -10,9 +10,10 @@ The position error reports the Euclidean distance between the current position o
 The heading error reports the difference in the current angle of orientation and the goal angle of orientation (the direction sparki should be facing when finished). 
 
 ### 4. Why include bearing error? ###
-The bearing error should be included because the goal position may not be directly in front of Sparki, so having the angle between the orientation of the robot and the direction of the goal position lets the robot get to the position in the most direct path. It also allows for a smoother curve in arriving at the goal position for part 3.
+The bearing error should be included because the goal position may not be directly be in front of Sparki, so having the angle between the orientation of the robot and the direction of the goal position lets the robot get to the position in the most direct path. It also allows for a smoother curve in arriving at the goal position for part 3.
 
-### 5. Describe how you implemented your feedback controller in Part 3. ###
+### 5. Describe how you implemented your feedback controller in Part 3. ### 
+Essentially, we implemented our feedback controller by first calculating our position error, heading error, and bearing error and retrieved the rotation speeds for both wheels. We were able to do this by multiplying our errors by the gain constants (as mentioned in question #8). 
 
 ### 6. Does your implementation for part 3 work? If not, describe the problems it has. ###
 
