@@ -75,7 +75,8 @@ void set_pose_destination(float x, float y, float t) {
   dest_pose_theta = t;
   if (dest_pose_theta > M_PI) dest_pose_theta -= 2*M_PI;
   if (dest_pose_theta < -M_PI) dest_pose_theta += 2*M_PI;
-  orig_dist_to_goal = 0; // TODO
+  calcDistanceError();
+  orig_dist_to_goal = d_err; // TODO
 }
 
 void readSensors() {
@@ -144,7 +145,7 @@ void inverseKinematics() {  //calculate necessary wheel speed
 
 
 void find_speed_theta() {
-  xr = d_err*0.01; 
+  xr = d_err/orig_dist_to_goal; 
   //if (xr > (h_err/d_err)){
     //xr = (h_err/d_err);
   //}
@@ -152,8 +153,13 @@ void find_speed_theta() {
     xr = 0.03;
   }
   //theta_dot = (0.1 / (d_err * b_err))  + (0.01 / (d_err * h_err));
-  theta_dot = ((h_err/d_err)*b_err) + ((h_err/d_err)*h_err); //somehow need to weight with d_err if d_err is large?
+  //theta_dot = ((h_err/d_err)*b_err) + ((h_err/d_err)*h_err); //somehow need to weight with d_err if d_err is large?
+  float p1 = (d_err/orig_dist_to_goal)*b_err;  
+  float p2 = (1-(d_err/orig_dist_to_goal))*h_err;
+  theta_dot = p1 + p2;
   //theta_dot = (h_err + b_err)/d_err;
+  
+  
 }
 
 void checkStop(){
@@ -173,18 +179,19 @@ void updateOdometry() {
                                    
   dX = ((cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct);// m/s
   dY = ((sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct); //m/s
-  float left, right;
-  left = (ROBOT_SPEED * CYCLE_TIME * abs(left_speed_pct)) / AXLE_DIAMETER;
-  right = (ROBOT_SPEED * CYCLE_TIME * abs(right_speed_pct)) / AXLE_DIAMETER;
-  
-
-  if (left_dir == DIR_CW){// going backwards, reverse sign. 
-    left *= -1.0;
-  }
-  if (right_dir == DIR_CCW){
-    right *= -1.0;
-  }
-  dTheta = right-left;
+  dTheta = ((ROBOT_SPEED * CYCLE_TIME)/AXLE_DIAMETER) * (left_speed_pct - right_speed_pct);
+//  float left, right;
+//  left = (ROBOT_SPEED * CYCLE_TIME * abs(left_speed_pct)) / AXLE_DIAMETER;
+//  right = (ROBOT_SPEED * CYCLE_TIME * abs(right_speed_pct)) / AXLE_DIAMETER;
+//  
+//
+//  if (left_dir == DIR_CW){// going backwards, reverse sign. 
+//    left *= -1.0;
+//  }
+//  if (right_dir == DIR_CCW){
+//    right *= -1.0;
+//  }
+//  dTheta = right-left;
 
   pose_x += dX;
   pose_y += dY;
@@ -206,14 +213,14 @@ void displayOdometry() {
   sparki.print(pose_y);
   sparki.print(" Yg: ");
   sparki.println(dest_pose_y);
-  sparki.print("T: ");
+  sparki.print("T:");
   sparki.print(to_degrees(pose_theta));
-  sparki.print(" Tg: ");
+  sparki.print(" Tg:");
   sparki.println(to_degrees(dest_pose_theta));
 
   sparki.print("dX : ");
   sparki.print(dX );
-  sparki.print("  dT: ");
+  sparki.print(" dT: ");
   sparki.println(dTheta);
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
@@ -332,7 +339,7 @@ void loop() {
   }
 
   //sparki.clearLCD();
-  updateOdometry();
+  //updateOdometry();
   sparki.updateLCD();
 
   end_time = millis();
