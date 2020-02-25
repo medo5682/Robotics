@@ -22,6 +22,8 @@ Essentially, we implemented our feedback controller by first calculating our pos
 ### 8. What happens if you alter your gain constants (the 0.1 and 0.01 values in Part 3.1, 3.2)? ###
 If you alter the gain constants, you are altering the size of the change in position and change in rotation that Sparki uses in order to move toward the goal position at each time step. 
 
+Specifically if you alter the gain constant to 0.1, then you will have an increase in the values for the change in position and rotation at each iteration. Likewise, if you alter the gain constant to 0.01, you will have a decrease in the values for the change in position and rotation at each iteration. 
+
 ### 9. What happens if you increase these gain constants? What if they become too large? ###
 If you increase the gain constants, then the amount that the robot changes in position and rotation at each time step increases, so it will increase the values for phi_l and phi_r, increasing the speed of the robot. If these gain constants for the change in position becomes too large, then the theta_dot could become neglegible and be ignored by the robot. If both of these gain constants become too large, then the robot will over-shoot the goal position in both angle and distance and will get stuck and not be able to converge to the final position and stop moving. 
 
@@ -30,8 +32,6 @@ If an obstacle was between the robot and its goal, the robot would hit this obst
 
 ### 11. (Briefly) How would you implement simple obstacle avoidance using the ultrasonic sensor? ###
 In order to implement simple obstacle avoidance using the ultrasonic sensor, we could have a check before the errors are calculated to see if anything is currently in the robots path. If it is, then choose a different direction, calculate the errors using that direction, and move there so the obstacle does not obscure the path anymore.
-
-
 
 ### 12. Describe what would happen if the obstacle-avoiding robot encountered a U-shaped object like this ### 
 If the obstacle-avoiding robot encountered a U-Shaped object like the one shown below... The robot would continue to head in the same direction as it originally would have to reach its destination. However, once it was "x" amount of cm from the obstacle, it would stop moving forward. Now, the robot would rotate "y" amount of degrees until it no longer detected the obstacle in its way. In would continue to move forward and check for the obstacle till it got around the edge of the obstacle. Once it successfuly moves to a point past the obstacle, it would then move in a straight line till it reached the destination. 
