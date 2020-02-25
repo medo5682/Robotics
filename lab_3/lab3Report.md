@@ -1,7 +1,7 @@
 # Lab 3 Report #
 
 ### 1. Describe one condition where your controller from Part 2 might fail. ###
-One condition where out controller from part 2 might fail could be when 
+One condition where our controller from part 2 might fail could be when an obstale comes in the way (as stated in quetsion 10). In this situation, the bot will run into an obstacle, thus not be able to reach its taget destination. Another situation where the controller may fail could be when the bot is put on a surface that the wheels weren't moving as expected (such as gravel), resulting in very inaccurate odometry.
 
 ### 2. What is the role of the position error? ###
 The position error reports the Euclidean distance between the current position of Sparki and the goal position, so the bot knows how much farther it needs to travel.
