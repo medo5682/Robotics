@@ -22,7 +22,8 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-int current_state = CONTROLLER_FOLLOW_LINE;
+//int current_state = CONTROLLER_FOLLOW_LINE;
+int current_state = CONTROLLER_GOTO_POSITION_PART3;
 
 // Odometry bookkeeping
 float orig_dist_to_goal = 0.0;
@@ -104,7 +105,7 @@ void positionError() {
 
 void calcBearingError(){
   //atan2f returns radians, dest_pose_theta is in radians
-  b_err = atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - dest_pose_theta;  //radians
+  b_err = atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - to_radians(dest_pose_theta);  //radians
 }
 
 void bearingError() {
@@ -134,25 +135,35 @@ void headingError() {
   current_state = -1; //stop robot after fixingheading error
 }
 
-void inverseKinematics() {
-  phi_l = (xr - (AXLE_DIAMETER * theta_dot / 2))/(WHEEL_RADIUS);
-  phi_r = (xr + (AXLE_DIAMETER * theta_dot / 2))/(WHEEL_RADIUS);
+void inverseKinematics() {  //calculate necessary wheel speed
+  phi_l = (xr - ((AXLE_DIAMETER * theta_dot) / 2.0))/(WHEEL_RADIUS);
+  phi_r = (xr + ((AXLE_DIAMETER * theta_dot) / 2.0))/(WHEEL_RADIUS);
+  //phi_l = ((2*xr)+(theta_dot*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
+  //phi_r = ((2*xr)- (theta_dot*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
 }
+
 
 void find_speed_theta() {
   xr = d_err*0.01; 
-  if (xr > 0.01){
-    xr = 0.01;
+  //if (xr > (h_err/d_err)){
+    //xr = (h_err/d_err);
+  //}
+  if (xr > 0.03) {
+    xr = 0.03;
   }
-  theta_dot = 0.1 / d_err * b_err  + 0.01 / d_err * h_err;
+  //theta_dot = (0.1 / (d_err * b_err))  + (0.01 / (d_err * h_err));
+  theta_dot = ((h_err/d_err)*b_err) + ((h_err/d_err)*h_err); //somehow need to weight with d_err if d_err is large?
+  //theta_dot = (h_err + b_err)/d_err;
 }
 
 void checkStop(){
   if (d_err <0.01 && to_degrees(h_err)<5){
+    sparki.print("in check stop");
+    sparki.updateLCD();
     sparki.moveStop();
-    left_speed_pct = 0;
-    right_speed_pct = 0;
-    current_state = -2;
+    left_speed_pct = 0.;
+    right_speed_pct = 0.;
+    current_state = -2; //which state is this?
   }
 }
 
@@ -162,21 +173,16 @@ void updateOdometry() {
                                    
   dX = ((cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct);// m/s
   dY = ((sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct); //m/s
-
-  float left = 0;// if not rotating
-  if (left_wheel_rotating == 1){//else update
-    left = (ROBOT_SPEED * CYCLE_TIME * left_speed_pct) / AXLE_DIAMETER;
-  }
-  float right = 0;
-  if (right_wheel_rotating == 1) {
-    right = (ROBOT_SPEED * CYCLE_TIME * right_speed_pct) / AXLE_DIAMETER;
-  }
+  float left, right;
+  left = (ROBOT_SPEED * CYCLE_TIME * abs(left_speed_pct)) / AXLE_DIAMETER;
+  right = (ROBOT_SPEED * CYCLE_TIME * abs(right_speed_pct)) / AXLE_DIAMETER;
+  
 
   if (left_dir == DIR_CW){// going backwards, reverse sign. 
-    left *= -1;
+    left *= -1.0;
   }
   if (right_dir == DIR_CCW){
-    right *= -1;
+    right *= -1.0;
   }
   dTheta = right-left;
 
@@ -207,11 +213,11 @@ void displayOdometry() {
 
   sparki.print("dX : ");
   sparki.print(dX );
-  sparki.print("   dT: ");
+  sparki.print("  dT: ");
   sparki.println(dTheta);
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
-  sparki.print("h: "); sparki.println(to_degrees(h_err));
+  sparki.print("h: "); sparki.print(to_degrees(h_err)); sparki.print(left_speed_pct); sparki.println(right_speed_pct);
 }
 
 void loop() {
@@ -279,12 +285,13 @@ void loop() {
       headingError();
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
-      //updateOdometry();
+      updateOdometry();
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
+      
       calcDistanceError();
       calcBearingError();
       calcHeadingError();
@@ -311,10 +318,10 @@ void loop() {
       }
 
       //set that the wheels are rotating so theta updates
-      if (left_speed_pct > 0){
+      if (left_speed_pct != 0){
         left_wheel_rotating = 1;
       }
-      if (right_speed_pct > 0){
+      if (right_speed_pct != 0){
         right_wheel_rotating = 1;
       }
 
