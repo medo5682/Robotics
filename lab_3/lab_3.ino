@@ -22,7 +22,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-//int current_state = CONTROLLER_FOLLOW_LINE;
+//int current_state = CONTROLLER_FOLLOW_LINE;/
 int current_state = CONTROLLER_GOTO_POSITION_PART3;
 
 // Odometry bookkeeping
@@ -65,7 +65,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.15,0.05, to_radians(135));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.3, 0.1, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -106,7 +106,7 @@ void positionError() {
 
 void calcBearingError(){
   //atan2f returns radians, dest_pose_theta is in radians
-  b_err = atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - to_radians(dest_pose_theta);  //radians
+  b_err = atan2f((dest_pose_y -pose_y),(dest_pose_x- pose_x)) - dest_pose_theta;  //radians
 }
 
 void bearingError() {
@@ -145,21 +145,20 @@ void inverseKinematics() {  //calculate necessary wheel speed
 
 
 void find_speed_theta() {
-  xr = d_err/orig_dist_to_goal; 
+  xr = d_err*0.1; 
   //if (xr > (h_err/d_err)){
     //xr = (h_err/d_err);
   //}
-  if (xr > 0.03) {
-    xr = 0.03;
+  if (xr > 0.02) {
+    xr = 0.02;
   }
   //theta_dot = (0.1 / (d_err * b_err))  + (0.01 / (d_err * h_err));
   //theta_dot = ((h_err/d_err)*b_err) + ((h_err/d_err)*h_err); //somehow need to weight with d_err if d_err is large?
-  float p1 = (d_err/orig_dist_to_goal)*b_err;  
-  float p2 = (1-(d_err/orig_dist_to_goal))*h_err;
+  float p1 = 0.3*(d_err/orig_dist_to_goal)*b_err+0.01;  
+  float p2 = 0.3*(1-(d_err/orig_dist_to_goal))*h_err+0.01;
   theta_dot = p1 + p2;
+// /
   //theta_dot = (h_err + b_err)/d_err;
-  
-  
 }
 
 void checkStop(){
@@ -179,7 +178,7 @@ void updateOdometry() {
                                    
   dX = ((cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct);// m/s
   dY = ((sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME)/2) * (left_speed_pct + right_speed_pct); //m/s
-  dTheta = ((ROBOT_SPEED * CYCLE_TIME)/AXLE_DIAMETER) * (left_speed_pct - right_speed_pct);
+  dTheta = ((ROBOT_SPEED * CYCLE_TIME)/AXLE_DIAMETER) * (right_speed_pct - left_speed_pct);
 //  float left, right;
 //  left = (ROBOT_SPEED * CYCLE_TIME * abs(left_speed_pct)) / AXLE_DIAMETER;
 //  right = (ROBOT_SPEED * CYCLE_TIME * abs(right_speed_pct)) / AXLE_DIAMETER;
@@ -252,10 +251,10 @@ void loop() {
         right_wheel_rotating = 1;
         left_dir = DIR_CW;
         right_dir = DIR_CW;
-        left_speed_pct = 1;
+        left_speed_pct = -1;
         right_speed_pct = 1;
         
-        sparki.motorRotate(MOTOR_LEFT, left_dir, left_speed_pct*100);
+        sparki.motorRotate(MOTOR_LEFT, left_dir, abs(left_speed_pct*100));
         sparki.motorRotate(MOTOR_RIGHT, right_dir, right_speed_pct*100);
         
       } else if (line_right < threshold) {
@@ -265,10 +264,10 @@ void loop() {
         left_dir = DIR_CCW;
         right_dir = DIR_CCW;
         left_speed_pct = 1;
-        right_speed_pct = 1;
+        right_speed_pct = -1;
         
         sparki.motorRotate(MOTOR_LEFT, left_dir, left_speed_pct*100);
-        sparki.motorRotate(MOTOR_RIGHT, right_dir, right_speed_pct*100);
+        sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(right_speed_pct*100));
         
       } 
       else {
@@ -324,13 +323,13 @@ void loop() {
         right_dir = DIR_CCW;
       }
 
-      //set that the wheels are rotating so theta updates
-      if (left_speed_pct != 0){
-        left_wheel_rotating = 1;
-      }
-      if (right_speed_pct != 0){
-        right_wheel_rotating = 1;
-      }
+//      //set that the wheels are rotating so theta updates
+//      if (left_speed_pct != 0){
+//        left_wheel_rotating = 1;
+//      }
+//      if (right_speed_pct != 0){
+//        right_wheel_rotating = 1;
+//      }
 
       sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
       sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
@@ -338,8 +337,8 @@ void loop() {
       break;
   }
 
-  //sparki.clearLCD();
-  //updateOdometry();
+  sparki.clearLCD();
+//  updateOdometry();/
   sparki.updateLCD();
 
   end_time = millis();
