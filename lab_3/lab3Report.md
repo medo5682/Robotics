@@ -39,3 +39,4 @@ If the obstacle-avoiding robot encountered a U-Shaped object like the one shown 
 Team Neptr
 
 ### 14. Roughly how much time did you spend programming this lab? ###
+13 Hours 
