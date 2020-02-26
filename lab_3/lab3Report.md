@@ -19,6 +19,15 @@ Essentially, we implemented our feedback controller by first calculating our pos
 Yes, our implementation for part 3 works. 
 
 ### 7. What are the equations for the final controller from your implementation? What are your equations for 𝜃𝑟 ′ 𝑎nd 𝑥𝑟′ in your feedback controller? ###
+void find_speed_theta() {
+  xr = d_err*0.05;
+  if (xr > 0.03) {
+    xr = 0.03;
+  }
+  float p1 = (d_err/orig_dist_to_goal)*b_err;  
+  float p2 = (1-(d_err/orig_dist_to_goal))*h_err;
+  theta_dot = p1 + p2;
+}
 
 ### 8. What happens if you alter your gain constants (the 0.1 and 0.01 values in Part 3.1, 3.2)? ###
 If you alter the gain constants, you are altering the size of the change in position and change in rotation that Sparki uses in order to move toward the goal position at each time step.
