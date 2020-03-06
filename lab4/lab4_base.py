@@ -260,9 +260,7 @@ def cost(cell_index_from, cell_index_to):
     if cost_val == 1: #check if both are empty
         i,j = cell_index_to_ij(cell_index_from)
         x,y = cell_index_to_ij(cell_index_to)
-        if world_map[i][j] == 1:
-            cost_val = 99
-        if world_map[x][y] == 1:
+        if world_map[i][j] == 1 or world_map[x][y] == 1:
             cost_val = 99
     
     return cost_val
