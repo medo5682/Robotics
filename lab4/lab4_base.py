@@ -78,7 +78,7 @@ def main():
         populate_map_from_ping(x_w, y_w)
 
         # if i%1000 == 0:
-        # 	display_map()
+        # 	321  y_map()
         # i+=1
 
 
@@ -209,12 +209,65 @@ def cell_index_to_ij(cell_index):
     #TODO: Convert from cell_index to (i,j) coordinates
     i = cell_index//x_dim
     j = cell_index - i*x_dim
-    return 0, 0
+    return i, j
 
 
 def cost(cell_index_from, cell_index_to):
     #TODO: Return cost of traversing from one cell to another
-    return 0
+    first_row = list(range(14))
+    last_row = list(range(266, 280))
+    right = cell_index_from + 1
+    left = cell_index_from - 1
+    down = cell_index_from + 14
+    up = cell_index_from - 14
+
+    if cell_index_from == 0:  #first element
+        if right or down:  #check to the right and immediately below
+            cost_val = 1
+        else:
+            cost_val = 99
+    elif cell_index_from == 279: #last element
+        if left or up #check to the left and immediately above
+            cost_val = 1
+        else:
+            cost_val = 99
+    elif cell_index_from in first_row:
+        if right or left or down:  #check to the right and left and immediately below
+            cost_val = 1
+        else:
+            cost_val = 99
+    elif cell_index_from in last_row:
+        if left or right or up:  #check to the right and left and immediately above
+            cost_val = 1
+        else:
+            cost_val = 99
+    elif cell_index_from%14 == 0:
+        if right or up or down:  #check to the right and below and immediately above
+            cost_val = 1
+        else:
+            cost_val = 99
+    elif cell_index_from%13 == 0:
+        if left or up or down:  #check to the left and below and immediately above
+            cost_val = 1
+        else:
+            cost_val = 99
+    else:  #not first or last element or in first row or in last or in first column or last
+        if left or right or up or down:  #check all adj
+            cost_val = 1
+        else:
+            cost_val = 99
+
+    if cost_val == 1: #check if both are empty
+        i,j = cell_index_to_ij(cell_index_from)
+        x,y = cell_index_to_ij(cell_index_to)
+        if world_map[i][j] == 1:
+            cost_val = 99
+        if world_map[x][y] == 1:
+            cost_val = 99
+    
+    return cost_val
+
+
 
 if __name__ == "__main__":
     main()
