@@ -23,9 +23,12 @@ ping = None
 
 
 #TODO: Create data structure to hold map representation
-world_map = [[0 for i in range(14)] for j in range(20)]
-scale = 45
-win = GraphWin("Sparki", 20*scale, 14*scale)
+y_dim = 14*3
+x_dim = 20*3
+world_map = [[0 for i in range(y_dim)] for j in range(x_dim)]
+scale = 45/3
+win = GraphWin("Sparki", x_dim*scale, y_dim*scale)
+win.setCoords(0, 0, x_dim*scale-1, y_dim*scale-1)
 
 
 # Use these variables to hold your publishers and subscribers
@@ -41,7 +44,6 @@ update_sim = None
 IR_THRESHOLD = 300 # IR sensor threshold for detecting black track. Change as necessary.
 CYCLE_TIME = 0.05 # In seconds
 
-
 def main():
     global publisher_motor, publisher_ping, publisher_servo, publisher_odom, update_sim
     global IR_THRESHOLD, CYCLE_TIME
@@ -49,7 +51,7 @@ def main():
 
     #Init your node to register it with the ROS core
     init()
-
+    i = 0
     while not rospy.is_shutdown():
 
     	publisher_ping.publish(Empty())
@@ -73,10 +75,11 @@ def main():
 
         obstacle_in_robot_x, obstacle_in_robot_y = convert_ultrasonic_to_robot_coords(ping)
         x_w, y_w = convert_robot_coords_to_world(obstacle_in_robot_x, obstacle_in_robot_y)
-
         populate_map_from_ping(x_w, y_w)
 
-
+        # if i%1000 == 0:
+        # 	display_map()
+        # i+=1
 
 
         #TODO: Implement loop closure here
@@ -88,7 +91,7 @@ def main():
         	publisher_odom.publish(loop_closure_odometry)
         	display_map()
 
-        	print(" LOOP CLOSURE TRIGGERED")
+        	print("LOOP CLOSURE TRIGGERED")
             # rospy.loginfo("Loop Closure Triggered")
 
         #Implement CYCLE TIME
@@ -163,8 +166,8 @@ def convert_ultrasonic_to_robot_coords(x_us):
 def convert_robot_coords_to_world(x_r, y_r):
     # Using odometry, convert robot-centric coordinates into world coordinates
     if x_r != None and y_r != None:
-    	x_w = x_r * cos(pi/2-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
-    	y_w = x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos(pi/2-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
+    	x_w = -x_r * cos((pi/2)-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
+    	y_w =  x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos((pi/2)-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
     else:
     	x_w = None
     	y_w = None
@@ -173,23 +176,27 @@ def convert_robot_coords_to_world(x_r, y_r):
 def populate_map_from_ping(x_ping, y_ping):
     #Given world coordinates of an object detected via ping, fill in the corresponding part of the map
    	if x_ping != None and y_ping != None:
-   		x_index = int((x_ping*20)//1.72)
-   		y_index = int((y_ping*14)//1.204)
+   		x_index = int((x_ping*x_dim)//1.72)
+   		y_index = int((y_ping*y_dim)//1.204)
    		print('Target coords (world):',x_ping, y_ping)
-   		print('Target:',x_index, y_index)
-   		
+   		print('Target:',x_index, y_index)   		
    		world_map[x_index][y_index] = 1
-   	print('robot:', int((pose2d_sparki_odometry.x*20)//1.72), int((pose2d_sparki_odometry.y*14)//1.204))
+
+   	robot_quadrant_x = int((pose2d_sparki_odometry.x*x_dim)//1.72)
+   	robot_quadrant_y= int((pose2d_sparki_odometry.y*y_dim)//1.204)
+   	world_map[robot_quadrant_x][robot_quadrant_y] = 2
+   	print('robot:',robot_quadrant_x ,robot_quadrant_y )
    	print()
 
 def display_map():
     #TODO: Display the map
-    for i in range(20):
-    	for j in range(14):
+    for i in range(x_dim):
+    	for j in range(y_dim):
     		square = Circle(Point(scale*i+20, scale*j+20), scale/3)
-    		print(i, j)
     		if world_map[i][j] == 1:
     			square.setFill("black")
+    		elif world_map[i][j] == 2: #sparki's path
+    			square.setFill("red")
     		square.draw(win)
 
 
