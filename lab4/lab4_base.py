@@ -4,6 +4,9 @@ import copy
 import time
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
+from math import sin, cos, radians
+
+from graphics import *
 
 
 # GLOBALS 
@@ -20,6 +23,10 @@ ping = None
 
 
 #TODO: Create data structure to hold map representation
+world_map = [[0 for i in range(14)] for j in range(20)]
+scale = 45
+win = GraphWin("Sparki", 20*scale, 14*scale)
+
 
 # Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -32,7 +39,8 @@ update_sim = None
 
 # CONSTANTS 
 IR_THRESHOLD = 300 # IR sensor threshold for detecting black track. Change as necessary.
-CYCLE_TIME = 0.1 # In seconds
+CYCLE_TIME = 0.05 # In seconds
+
 
 def main():
     global publisher_motor, publisher_ping, publisher_servo, publisher_odom, update_sim
@@ -43,6 +51,7 @@ def main():
     init()
 
     while not rospy.is_shutdown():
+
     	publisher_ping.publish(Empty())
         #Implement CYCLE TIME
         time_start = time.time()
@@ -62,6 +71,13 @@ def main():
         publisher_motor.publish(msg)
         update_sim.publish(Empty())
 
+        obstacle_in_robot_x, obstacle_in_robot_y = convert_ultrasonic_to_robot_coords(ping)
+        x_w, y_w = convert_robot_coords_to_world(obstacle_in_robot_x, obstacle_in_robot_y)
+
+        populate_map_from_ping(x_w, y_w)
+
+
+
 
         #TODO: Implement loop closure here
         if ping < 0.073 and ping > 0: #based on baseline close point to line
@@ -70,6 +86,7 @@ def main():
         	loop_closure_odometry.x = 0.555826766491
         	loop_closure_odometry.y = 0.216
         	publisher_odom.publish(loop_closure_odometry)
+        	display_map()
 
         	print(" LOOP CLOSURE TRIGGERED")
             # rospy.loginfo("Loop Closure Triggered")
@@ -133,26 +150,54 @@ def callback_update_state(data):
 
 
 def convert_ultrasonic_to_robot_coords(x_us):
-    #TODO: Using US sensor reading and servo angle, return value in robot-centric coordinates
-    x_r, y_r = 0., 0.
+    # Using US sensor reading and servo angle, return value in robot-centric coordinates
+    if x_us != None and x_us > 0:
+    	x_r = x_us * sin(radians(servo_angle))
+    	y_r = x_us * cos(radians(servo_angle))
+    	print('Target coords (robot):', x_r, y_r)
+    else:
+    	x_r = None
+    	y_r = None
     return x_r, y_r
 
 def convert_robot_coords_to_world(x_r, y_r):
-    #TODO: Using odometry, convert robot-centric coordinates into world coordinates
-    x_w, y_w = 0., 0.
-
+    # Using odometry, convert robot-centric coordinates into world coordinates
+    if x_r != None and y_r != None:
+    	x_w = x_r * cos(90-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
+    	y_w = x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos(90-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
+    else:
+    	x_w = None
+    	y_w = None
     return x_w, y_w
 
 def populate_map_from_ping(x_ping, y_ping):
-    #TODO: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
-    pass
+    #Given world coordinates of an object detected via ping, fill in the corresponding part of the map
+   	if x_ping != None and y_ping != None:
+   		x_index = int((x_ping*20)//1.72)
+   		y_index = int((y_ping*14)//1.204)
+   		print('Target coords (world):',x_ping, y_ping)
+   		print('Target:',x_index, y_index)
+   		
+   		world_map[x_index][y_index] = 1
+   	print('robot:', int((pose2d_sparki_odometry.x*20)//1.72), int((pose2d_sparki_odometry.y*20)//1.72))
+   	print()
 
 def display_map():
     #TODO: Display the map
-    pass
+    for i in range(20):
+    	for j in range(14):
+    		square = Circle(Point(scale*i+20, scale*j+20), scale/3)
+    		print(i, j)
+    		if world_map[i][j] == 1:
+    			square.setFill("black")
+    		square.draw(win)
+
+
 
 def ij_to_cell_index(i,j):
     #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
+    
+     
     return 0
 
 def cell_index_to_ij(cell_index):
