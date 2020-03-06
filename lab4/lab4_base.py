@@ -4,7 +4,7 @@ import copy
 import time
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
-from math import sin, cos, radians
+from math import sin, cos, radians, pi
 
 from graphics import *
 
@@ -163,8 +163,8 @@ def convert_ultrasonic_to_robot_coords(x_us):
 def convert_robot_coords_to_world(x_r, y_r):
     # Using odometry, convert robot-centric coordinates into world coordinates
     if x_r != None and y_r != None:
-    	x_w = x_r * cos(90-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
-    	y_w = x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos(90-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
+    	x_w = x_r * cos(pi/2-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
+    	y_w = x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos(pi/2-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
     else:
     	x_w = None
     	y_w = None
@@ -179,7 +179,7 @@ def populate_map_from_ping(x_ping, y_ping):
    		print('Target:',x_index, y_index)
    		
    		world_map[x_index][y_index] = 1
-   	print('robot:', int((pose2d_sparki_odometry.x*20)//1.72), int((pose2d_sparki_odometry.y*20)//1.72))
+   	print('robot:', int((pose2d_sparki_odometry.x*20)//1.72), int((pose2d_sparki_odometry.y*14)//1.204))
    	print()
 
 def display_map():
