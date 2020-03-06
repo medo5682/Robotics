@@ -189,7 +189,7 @@ def populate_map_from_ping(x_ping, y_ping):
    	print()
 
 def display_map():
-    #TODO: Display the map
+    # Display the map
     for i in range(x_dim):
     	for j in range(y_dim):
     		square = Circle(Point(scale*i+20, scale*j+20), scale/3)
@@ -203,12 +203,12 @@ def display_map():
 
 def ij_to_cell_index(i,j):
     #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
-    
-     
-    return 0
+    return i*x_dim + j
 
 def cell_index_to_ij(cell_index):
     #TODO: Convert from cell_index to (i,j) coordinates
+    i = cell_index//x_dim
+    j = cell_index - i*x_dim
     return 0, 0
 
 
