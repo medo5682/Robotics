@@ -8,7 +8,7 @@ The subscribers in our code are:
 subscriber_odometry  
 subscriber_state   
 
-These subscribers receive message types of 
+These subscribers receive message types of      
 
 ### 3.List the publishers that your code has. What message types are they sending? Please provide a brief description. ###
 publisher_motor  
