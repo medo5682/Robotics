@@ -1,6 +1,8 @@
 # Lab 4 Report #
 
-### 1. What is the drawback of a data structure that stores distances between every possible pair of nodes in the graph? How does the implementation in 4-2 address this problem? ### 
+### 1. What is the drawback of a data structure that stores distances between every possible pair of nodes in the graph? How does the implementation in 4-2 address this problem? ###  
+
+
 
 ### 2.List the subscribers that your code has. What message types are they receiving? Please provide a brief description. ###
 subscriber_odometry  
