@@ -20,6 +20,8 @@ The first publisher sends motor commands to determine the left and right wheel s
 
 ### 4.Please paste the resulting final map as rendered by your code that shows all the obstacles found and mapped by your robot. Is there a mismatch with the provided obstacle image file (obstacles.png in the simulator)? If so, why? How could you make it better? ###
 
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab4/map.jpg)
+
 ### 5.Do you like ROS? ###
 
 ### 6.Roughly how much time did your group spend programming this lab? ###
