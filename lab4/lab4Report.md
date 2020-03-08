@@ -23,5 +23,7 @@ The first publisher sends motor commands to determine the left and right wheel s
 ![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab4/map.jpg)
 
 ### 5.Do you like ROS? ###
+Yes, overall we like ROS because of how automated the simulations can be. It is able to accurately portray the communication between the sensors and motors in a very efficient manner, just as it would appear with a live robot (similar to the Sparki robot we were using in the previous labs). 
 
 ### 6.Roughly how much time did your group spend programming this lab? ###
+We spent about 12-15 working on this lab. 
