@@ -8,7 +8,7 @@ The subscribers in our code are:
 subscriber_odometry  
 subscriber_state   
 
-The first subscriber is receiving messages      
+The first subscriber is receiving messages to read robot odometry containing member variable such as x, y, theta. The second subscriber is recieving messages to read the robot state through a JSON encoded dictionary which includes the servo theta value, IR sensor value, and the ping distance.        
 
 ### 3.List the publishers that your code has. What message types are they sending? Please provide a brief description. ###
 publisher_motor  
