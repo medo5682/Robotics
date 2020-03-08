@@ -28,4 +28,4 @@ This picture above shows our map containing the obstacles (in black) in which ar
 Yes, overall we like ROS because of how automated the simulations can be. It is able to accurately portray the communication between the sensors and motors in a very efficient manner, just as it would appear with a live robot (similar to the Sparki robot we were using in the previous labs). 
 
 ### 6.Roughly how much time did your group spend programming this lab? ###
-We spent about 12-15 working on this lab. 
+We spent about 12-15 hours working on this lab. 
