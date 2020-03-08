@@ -16,6 +16,8 @@ publisher_odom
 publisher_ping  
 publisher_servo  
 
+The first publisher sends motor commands to determine the left and right wheel speed. The second publisher sends messages to tell Sparki to set the odometry values, which are very useful for the loop closure. The third publisher tells Sparki to ping, and switch to the next state as per the ping command. The fourth publisher tells Sparki to set the servo motor to an angle in between the values of -80 to 80 degrees. 
+
 ### 4.Please paste the resulting final map as rendered by your code that shows all the obstacles found and mapped by your robot. Is there a mismatch with the provided obstacle image file (obstacles.png in the simulator)? If so, why? How could you make it better? ###
 
 ### 5.Do you like ROS? ###
