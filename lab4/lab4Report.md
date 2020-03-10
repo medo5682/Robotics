@@ -22,7 +22,7 @@ The first publisher sends motor commands to determine the left and right wheel s
 
 ![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab4/map.jpg)
 
-This picture above shows our map containing the obstacles (in black) in which are very consistant to the obstacle image file that was provided to us. 
+This picture above shows our map containing the obstacles (in black) in which are somewhat consistant to the obstacle image file that was provided to us. As you can see there was a small error in loop closure, which accounts for the small gap between the start and end positions. To make this better, the loop closure code could be altered to be more efficeint 
 
 ### 5.Do you like ROS? ###
 Yes, overall we like ROS because of how automated the simulations can be. It is able to accurately portray the communication between the sensors and motors in a very efficient manner, just as it would appear with a live robot (similar to the Sparki robot we were using in the previous labs). 
