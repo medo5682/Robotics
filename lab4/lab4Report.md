@@ -20,9 +20,11 @@ The first publisher sends motor commands to determine the left and right wheel s
 
 ### 4.Please paste the resulting final map as rendered by your code that shows all the obstacles found and mapped by your robot. Is there a mismatch with the provided obstacle image file (obstacles.png in the simulator)? If so, why? How could you make it better? ###
 
-![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab4/map.jpg)
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab4/map_2.png)
 
-This picture above shows our map containing the obstacles (in black) in which are somewhat consistant to the obstacle image file that was provided to us. As you can see there was a small error in loop closure, which accounts for the small gap between the start and end positions. To make this better, the loop closure code could be altered to be more efficeint 
+In the picture above, the route that the bot takes is in red, the obstacles are in black, and the position of the robot is in green.
+
+This picture above shows our map containing the obstacles (in black) in which are very close to the obstacle image file that was provided to us. Due to the way that the loop closure has been implemented in our code, the robot will not mark the bottom edge of the path. To make this better, the loop closure could extend where the bot has to end in order to continue filling in the path. 
 
 ### 5.Do you like ROS? ###
 Yes, overall we like ROS because of how automated the simulations can be. It is able to accurately portray the communication between the sensors and motors in a very efficient manner, just as it would appear with a live robot (similar to the Sparki robot we were using in the previous labs). 
