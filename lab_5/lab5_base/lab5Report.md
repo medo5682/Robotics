@@ -3,21 +3,21 @@
 ### 1. Briefly explain how the algorithm works (N.B. This is a very common interview question). ###
 Dijkstra's algorithm works by calculating the shortest path between the source vertex of a graph and all other vertecies. It iterates through the graph to determine weights between the source node and the current vertex. For the purpose of this lab, the algorithm checks if the current node is a neighbor the the previous and if there is an obstacle contained within the vertex. If not, there is no special weighting to the system, it simply determines how far away the selected vertex is from the source node, incrementing by ones. Otherwise, the weight is assigned a very high value so that it won't be chosen when creating the shortest path. 
 
-###2. What is an example of an admissible heuristic that would help with implementing an informed search algorithm for this problem? ###
+### 2. What is an example of an admissible heuristic that would help with implementing an informed search algorithm for this problem? ###
 
 
-###3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
+### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
 
 
-###4. [Part 1] Show sample output for the example used in Q2. ###
+### 4. [Part 1] Show sample output for the example used in Q2. ###
 
 
-###5. [Part 2] Show the paths on the images for the following 4 cases. ###
-####a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
-####b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
-####c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
-####d. obstacles_test2.png, source = (0.225, 0.6), goal = (1.35, 0.3) ####
+### 5. [Part 2] Show the paths on the images for the following 4 cases. ###
+#### a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
+#### b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
+#### c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
+#### d. obstacles_test2.png, source = (0.225, 0.6), goal = (1.35, 0.3) ####
 
 
-###6. Roughly how much time did you spend programming this lab? ###
+### 6. Roughly how much time did you spend programming this lab? ###
 
