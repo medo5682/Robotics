@@ -19,8 +19,8 @@ MAP_SIZE_Y = None
 # Default parameters will create a 4x4 grid to test with
 g_MAP_SIZE_X = 2. # 2m wide
 g_MAP_SIZE_Y = 1.5 # 1.5m tall
-g_MAP_RESOLUTION_X = 0.5 # Each col represents 50cm
-g_MAP_RESOLUTION_Y = 0.375 # Each row represents 37.5cm
+g_MAP_RESOLUTION_X = 0.5/1 # Each col represents 50cm
+g_MAP_RESOLUTION_Y = 0.375/1 # Each row represents 37.5cm
 g_NUM_X_CELLS = int(g_MAP_SIZE_X // g_MAP_RESOLUTION_X) # Number of columns in the grid map
 g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the grid map
 
@@ -124,82 +124,79 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
-  i,j = vertex_index_to_ij(vertex_source)
-  x,y = vertex_index_to_ij(vertex_dest)
-  if g_WORLD_MAP[i][j] == 1 or g_WORLD_MAP[x][y] == 1:
+  print('source:',vertex_source)
+  print('dest:',vertex_dest)
+  if g_WORLD_MAP[vertex_source] == 1 or g_WORLD_MAP[vertex_dest] == 1:
     cost_val = 1000
   else:
     cost_val = 1
 
   return cost_val
 
-
-
 def check_neighbors(vertex):
-  first_row = list(range(g_NUM_X_CELLS))
-  last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
-  right = vertex + 1
-  left = vertex - 1
-  down = vertex + g_NUM_X_CELLS
-  up = vertex - g_NUM_X_CELLS
-  neighbors = []
+	 first_row = list(range(g_NUM_X_CELLS))
+	 last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
+	 right = vertex + 1
+	 left = vertex - 1
+	 down = vertex + g_NUM_X_CELLS
+	 up = vertex - g_NUM_X_CELLS
+	 neighbors = []
 
-  if vertex == 0:  #first element
-    first_index = up
-    second_index = right  #check to the right and immediately below
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-  elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
-    first_index = left
-    second_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-  elif vertex in first_row:
-    first_index = left
-    second_index = right
-    third_index = down
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  elif vertex in last_row:
-    first_index = left
-    second_index = right
-    third_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  elif vertex%g_NUM_X_CELLS == 0:
-    first_index = down
-    second_index = right
-    third_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  elif vertex%(g_NUM_X_CELLS-1) == 0:
-    first_index = left
-    second_index = down
-    third_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  else:  #not first or last element or in first row or in last or in first column or last
-    first_index = left
-    second_index = down
-    third_index = up
-    fourth_index = right
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-    neighbors.append(fourth_index)
+	 if vertex == 0:  #first element
+	    first_index = up
+	    second_index = right  #check to the right and immediately below
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	  elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
+	    first_index = left
+	    second_index = up
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	  elif vertex in first_row:
+	    first_index = left
+	    second_index = right
+	    third_index = down
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	    neighbors.append(third_index)
+	  elif vertex in last_row:
+	    first_index = left
+	    second_index = right
+	    third_index = up
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	    neighbors.append(third_index)
+	  elif vertex%g_NUM_X_CELLS == 0:
+	    first_index = down
+	    second_index = right
+	    third_index = up
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	    neighbors.append(third_index)
+	  elif vertex%(g_NUM_X_CELLS-1) == 0:
+	    first_index = left
+	    second_index = down
+	    third_index = up
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	    neighbors.append(third_index)
+	  else:  #not first or last element or in first row or in last or in first column or last
+	    first_index = left
+	    second_index = down
+	    third_index = up
+	    fourth_index = right
+	    neighbors.append(first_index)
+	    neighbors.append(second_index)
+	    neighbors.append(third_index)
+	    neighbors.append(fourth_index)
 
-  return neighbors
+	  return neighbors
 
 
 def run_dijkstra(source_vertex):
   '''
   source_vertex: vertex index to find all paths back to
   returns: 'prev' array from a completed Dijkstra's algorithm run
-
   Function to return an array of ints corresponding to the 'prev' variable in Dijkstra's algorithm
   The 'prev' array stores the next vertex on the best path back to source_vertex.
   Thus, the returned array prev can be treated as a lookup table:  prev[vertex_index] = next vertex index on the path back to source_vertex
@@ -223,19 +220,25 @@ def run_dijkstra(source_vertex):
 
   overall_cost = 0
 
-  for i in g_NUM_X_CELLS:
-    for j in g_NUM_Y_CELLS:
+  for i in range(g_NUM_X_CELLS):
+    for j in range(g_NUM_Y_CELLS):
       vertex = ij_to_vertex_index(i,j)
       neighbors = check_neighbors(vertex)
-      for i in neighbors:
-        c = get_travel_cost(vertex_source, i)
+      for k in neighbors:
+      	print('checking from ', vertex)
+      	print('to', k)
+
+        c = get_travel_cost(source_vertex, k)
+        print('travel cost:', c)
         if c == 1000:
-          dist[i] = 1000
-          prev[i] = -1
+          dist[k] = 1000
+          prev[k] = -1
         else:
           length = vertex - source_vertex
-          dist[i] = length + c
-          prev[i] = vertex
+          dist[k] = length + c
+          print('total cost to dest:', dist[k])
+          prev[k] = vertex
+        print()
 
   # Return results of algorithm run
   return prev
@@ -249,17 +252,24 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
   If there is no path between source_vertex and dest_vertex, as indicated by hitting a '-1' on the
   path from dest to source, return an empty list.
   '''
-  final_path = []
+  final_path = [dest_vertex]
 
-  # TODO: Insert your code here
+  current_vertex = dest_vertex
 
 
+  while current_vertex != source_vertex:
+  	current_vertex = prev[current_vertex]
+  	if current_vertex != -1:
+  		final_path.append(current_vertex)
+  	else:
+  		print('shit')
+  		return []
+  final_path.reverse()
   return final_path
 
 
 def render_map(map_array):
   '''
-  TODO-
     Display the map in the following format:
     Use " . " for free grid cells
     Use "[ ]" for occupied grid cells
@@ -280,26 +290,59 @@ def render_map(map_array):
     Make sure to display your map so that I,J coordinate (0,0) is in the bottom left.
     (To do this, you'll probably want to iterate from row 'J-1' to '0')
   '''
-  pass
+  for j in range(g_NUM_Y_CELLS-1,-1, -1):
+  	line_str = ''
+  	for i in range(g_NUM_X_CELLS):
+  		vertex = ij_to_vertex_index(i,j)
+  		if g_WORLD_MAP[vertex] == 0:
+  			line_str += ' .  '
+  		else:
+  			line_str += '[ ] '
+  	print(line_str)
+
+  for j in range(g_NUM_Y_CELLS-1,-1, -1):
+  	line_str = ''
+  	for i in range(g_NUM_X_CELLS):
+  		vertex = ij_to_vertex_index(i,j)
+  		if vertex<10:
+  			vertex = str(vertex) + ' '
+  		line_str += ' ' + str(vertex) + ' '
+  	print(line_str)
+
 
 
 def part_1():
   global g_WORLD_MAP
-
-  # TODO: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
-
+  #  Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
+  g_WORLD_MAP= create_test_map(g_WORLD_MAP)
 
   # Use render_map to render your initialized obstacle map
+  render_map(g_WORLD_MAP)
 
-  # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
+  # Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
+  print('global source:',ij_to_vertex_index( g_src_coordinates[0], g_src_coordinates[1]))
+  prev = run_dijkstra(ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]))
+  final_path = reconstruct_path(prev, 
+  	ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]), 
+  	ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]))
 
   '''
-  TODO-
     Display the final path in the following format:
     Source: (0,0)
     Goal: (3,1)
     0 -> 1 -> 2 -> 6 -> 7
   '''
+  print_str = ''
+  print("Source: " + str(g_src_coordinates))
+  print('Goal: ' + str(g_dest_coordinates))
+  if len(final_path)>0:
+	  for i in final_path:
+	  	if i != ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]):
+	  		print_str += str(i) + ' -> '
+	  print_str += str(final_path[-1])
+	  print(print_str)
+  else:
+  	print('No valid path found')
 
 
 def part_2(args):
@@ -324,6 +367,51 @@ def part_2(args):
 
   #### Your code goes here ####
 
+  #image size
+  num_pixels_x = len(pixel_grid[0])
+  num_pixels_y = len(pixel_grid)
+
+  for i in range(g_NUM_X_CELLS):
+  	for j in range(g_NUM_Y_CELLS):
+  		# coordinates of box to be searched for obstacles
+  		start_coord_x = i * int(num_pixels_x//g_NUM_X_CELLS)
+  		end_coord_x = (i+1) * int(num_pixels_x//g_NUM_X_CELLS)
+  		end_coord_y = num_pixels_y - j * int(num_pixels_y//g_NUM_Y_CELLS)
+  		start_coord_y = num_pixels_y - (j+1) * int(num_pixels_y//g_NUM_Y_CELLS)
+
+  		#obstacle search 
+  		filled = False
+  		for x in range(start_coord_x, end_coord_x):
+  			for y in range(start_coord_y, end_coord_y):
+  				if pixel_grid[y][x]  != 0: # any non-white pixel means there is an obstacle in that cell
+  					filled = True
+  					pixel_grid[y][x] = 0 #recolor to black for export
+  				else:
+  					pixel_grid[y][x] = 255 #recolor to white for export
+  		# update world map 
+  		vertex = ij_to_vertex_index(i,j)
+  		g_WORLD_MAP[vertex] = int(filled)
+
+  render_map(g_WORLD_MAP)
+  prev = run_dijkstra(ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]))
+  final_path = reconstruct_path(prev, 
+  	ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]), 
+  	ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]))
+
+
+# pixel_grid is indexed from the top
+  for vertex in final_path:
+   i,j  = vertex_index_to_ij(vertex)
+   x = int((i+0.5) * (num_pixels_x//g_NUM_X_CELLS)) #put dot in center of cell
+   y = int((j+0.5) * (num_pixels_y//g_NUM_Y_CELLS))
+   for k in range(-5, 5):# 5 pixel range around center
+   	for l in range(-5, 5):
+   		pixel_grid[ num_pixels_y - y + k ][ x + l ] = 0 # y = 0, starts at top, do an offset
+
+  title= "Optimal Path from " + str(g_src_coordinates) + " to " + str(g_dest_coordinates) + '.png'
+  final_img = Image.fromarray(pixel_grid)
+  final_img = final_img.convert("L")
+  final_img.save(title)
 
 
 
@@ -333,7 +421,6 @@ if __name__ == "__main__":
   parser.add_argument('-g','--dest_coordinates', nargs=2, default=[0.3, 0.7], help='Goal x, y location in world coords')
   parser.add_argument('-o','--obstacles', nargs='?', type=str, default='obstacles_test1.png', help='Black and white image showing the obstacle locations')
   args = parser.parse_args()
-
 
   part_1()
   # part_2(args)
