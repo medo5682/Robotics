@@ -145,52 +145,52 @@ def check_neighbors(vertex):
   neighbors = []
 
   if vertex == 0:  #first element
-    1n = up
-    2n = right  #check to the right and immediately below
-    neighbors.append(1n)
-    neighbors.append(2n)
+    first_index = up
+    second_index = right  #check to the right and immediately below
+    neighbors.append(first_index)
+    neighbors.append(second_index)
   elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
-    1n = left
-    2n = up
-    neighbors.append(1n)
-    neighbors.append(2n)
+    first_index = left
+    second_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
   elif vertex in first_row:
-    1n = left
-    2n = right
-    3n = down
-    neighbors.append(1n)
-    neighbors.append(2n)
-    neighbors.append(3n)
+    first_index = left
+    second_index = right
+    third_index = down
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
   elif vertex in last_row:
-    1n = left
-    2n = right
-    3n = up
-    neighbors.append(1n)
-    neighbors.append(2n)
-    neighbors.append(3n)
+    first_index = left
+    second_index = right
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
   elif vertex%g_NUM_X_CELLS == 0:
-    1n = down
-    2n = right
-    3n = up
-    neighbors.append(1n)
-    neighbors.append(2n)
-    neighbors.append(3n)
+    first_index = down
+    second_index = right
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
   elif vertex%(g_NUM_X_CELLS-1) == 0:
-    1n = left
-    2n = down
-    3n = up
-    neighbors.append(1n)
-    neighbors.append(2n)
-    neighbors.append(3n)
+    first_index = left
+    second_index = down
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
   else:  #not first or last element or in first row or in last or in first column or last
-    1n = left
-    2n = down
-    3n = up
-    4n = right
-    neighbors.append(1n)
-    neighbors.append(2n)
-    neighbors.append(3n)
-    neighbors.append(4n)
+    first_index = left
+    second_index = down
+    third_index = up
+    fourth_index = right
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+    neighbors.append(fourth_index)
 
   return neighbors
 
