@@ -124,60 +124,75 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
+  i,j = vertex_index_to_ij(vertex_source)
+  x,y = vertex_index_to_ij(vertex_dest)
+  if g_WORLD_MAP[i][j] == 1 or g_WORLD_MAP[x][y] == 1:
+    cost_val = 1000
+  else:
+    cost_val = 1
 
-  first_row = list(range(g_NUM_X_CELLS))
-  last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
-  right = vertex_source + 1
-  left = vertex_source - 1
-  down = vertex_source + g_NUM_X_CELLS
-  up = vertex_source - g_NUM_X_CELLS
-  cost_val = 1000
-
-  if cell_index_from == 0:  #first element
-      if right == vertex_dest or down == vertex_dest:  #check to the right and immediately below
-          cost_val = 1
-      else:
-          cost_val = 1000
-  elif cell_index_from == 279: #last element
-      if left == vertex_dest or up == vertex_dest: #check to the left and immediately above
-          cost_val = 1
-      else:
-          cost_val = 1000
-  elif cell_index_from in first_row:
-      if right == vertex_dest or left == vertex_dest or down == vertex_dest:  #check to the right and left and immediately below
-          cost_val = 1
-      else:
-          cost_val = 1000
-  elif cell_index_from in last_row:
-      if left == vertex_dest or right == vertex_dest or up == vertex_dest:  #check to the right and left and immediately above
-          cost_val = 1
-      else:
-          cost_val = 1000
-  elif cell_index_from%g_NUM_X_CELLS == 0:
-      if right == vertex_dest or up == vertex_dest or down == vertex_dest:  #check to the right and below and immediately above
-          cost_val = 1
-      else:
-          cost_val = 1000
-  elif cell_index_from%(g_NUM_X_CELLS-1) == 0:
-      if left == vertex_dest or up == vertex_dest or down == vertex_dest:  #check to the left and below and immediately above
-          cost_val = 1
-      else:
-          cost_val = 1000
-  else:  #not first or last element or in first row or in last or in first column or last
-      if left == vertex_dest or right == vertex_dest or up == vertex_dest or down == vertex_dest:  #check all adj
-          cost_val = 1
-      else:
-          cost_val = 1000
-
-  if cost_val == 1: #check if both are empty
-      i,j = vertex_index_to_ij(vertex_source)
-      x,y = vertex_index_to_ij(vertex_dest)
-      if world_map[i][j] == 1 or world_map[x][y] == 1:
-          cost_val = 1000
-  
   return cost_val
 
-  return 100
+
+
+def check_neighbors(vertex):
+  first_row = list(range(g_NUM_X_CELLS))
+  last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
+  right = vertex + 1
+  left = vertex - 1
+  down = vertex + g_NUM_X_CELLS
+  up = vertex - g_NUM_X_CELLS
+  neighbors = []
+
+  if vertex == 0:  #first element
+    1n = up
+    2n = right  #check to the right and immediately below
+    neighbors.append(1n)
+    neighbors.append(2n)
+  elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
+    1n = left
+    2n = up
+    neighbors.append(1n)
+    neighbors.append(2n)
+  elif vertex in first_row:
+    1n = left
+    2n = right
+    3n = down
+    neighbors.append(1n)
+    neighbors.append(2n)
+    neighbors.append(3n)
+  elif vertex in last_row:
+    1n = left
+    2n = right
+    3n = up
+    neighbors.append(1n)
+    neighbors.append(2n)
+    neighbors.append(3n)
+  elif vertex%g_NUM_X_CELLS == 0:
+    1n = down
+    2n = right
+    3n = up
+    neighbors.append(1n)
+    neighbors.append(2n)
+    neighbors.append(3n)
+  elif vertex%(g_NUM_X_CELLS-1) == 0:
+    1n = left
+    2n = down
+    3n = up
+    neighbors.append(1n)
+    neighbors.append(2n)
+    neighbors.append(3n)
+  else:  #not first or last element or in first row or in last or in first column or last
+    1n = left
+    2n = down
+    3n = up
+    4n = right
+    neighbors.append(1n)
+    neighbors.append(2n)
+    neighbors.append(3n)
+    neighbors.append(4n)
+
+  return neighbors
 
 
 def run_dijkstra(source_vertex):
@@ -192,16 +207,35 @@ def run_dijkstra(source_vertex):
   global g_NUM_X_CELLS, g_NUM_Y_CELLS
 
   # Array mapping vertex_index to distance of shortest path from vertex_index to source_vertex.
-  dist = [0] * g_NUM_X_CELLS * g_NUM_Y_CELLS
+  dist = [1000] * g_NUM_X_CELLS * g_NUM_Y_CELLS
 
   # Queue for identifying which vertices are up to still be explored:
   # Will contain tuples of (vertex_index, cost), sorted such that the min cost is first to be extracted (explore cheapest/most promising vertices first)
-  Q_cost = []
+  Q_cost = [-1] * g_NUM_X_CELLS*g_NUM_Y_CELLS
 
   # Array of ints for storing the next step (vertex_index) on the shortest path back to source_vertex for each vertex in the graph
   prev = [-1] * g_NUM_X_CELLS*g_NUM_Y_CELLS
 
   # Insert your Dijkstra's code here. Don't forget to initialize Q_cost properly!
+
+  Q_cost[source_vertex] = 0
+  dist[source_vertex] = 0
+
+  overall_cost = 0
+
+  for i in g_NUM_X_CELLS:
+    for j in g_NUM_Y_CELLS:
+      vertex = ij_to_vertex_index(i,j)
+      neighbors = check_neighbors(vertex)
+      for i in neighbors:
+        c = get_travel_cost(vertex_source, i)
+        if c == 1000:
+          dist[i] = 1000
+          prev[i] = -1
+        else:
+          length = vertex - source_vertex
+          dist[i] = length + c
+          prev[i] = vertex
 
   # Return results of algorithm run
   return prev
