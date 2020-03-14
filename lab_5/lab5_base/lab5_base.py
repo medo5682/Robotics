@@ -134,63 +134,63 @@ def get_travel_cost(vertex_source, vertex_dest):
   return cost_val
 
 def check_neighbors(vertex):
-	 first_row = list(range(g_NUM_X_CELLS))
-	 last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
-	 right = vertex + 1
-	 left = vertex - 1
-	 down = vertex + g_NUM_X_CELLS
-	 up = vertex - g_NUM_X_CELLS
-	 neighbors = []
+  first_row = list(range(g_NUM_X_CELLS))
+  last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
+  right = vertex + 1
+  left = vertex - 1
+  down = vertex + g_NUM_X_CELLS
+  up = vertex - g_NUM_X_CELLS
+  neighbors = []
 
-	 if vertex == 0:  #first element
-	    first_index = up
-	    second_index = right  #check to the right and immediately below
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	  elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
-	    first_index = left
-	    second_index = up
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	  elif vertex in first_row:
-	    first_index = left
-	    second_index = right
-	    third_index = down
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	    neighbors.append(third_index)
-	  elif vertex in last_row:
-	    first_index = left
-	    second_index = right
-	    third_index = up
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	    neighbors.append(third_index)
-	  elif vertex%g_NUM_X_CELLS == 0:
-	    first_index = down
-	    second_index = right
-	    third_index = up
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	    neighbors.append(third_index)
-	  elif vertex%(g_NUM_X_CELLS-1) == 0:
-	    first_index = left
-	    second_index = down
-	    third_index = up
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	    neighbors.append(third_index)
-	  else:  #not first or last element or in first row or in last or in first column or last
-	    first_index = left
-	    second_index = down
-	    third_index = up
-	    fourth_index = right
-	    neighbors.append(first_index)
-	    neighbors.append(second_index)
-	    neighbors.append(third_index)
-	    neighbors.append(fourth_index)
-
-	  return neighbors
+  if vertex == 0:  #first element
+    first_index = down
+    second_index = right  #check to the right and immediately below
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+  elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
+    first_index = left
+    second_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+  elif vertex in first_row:
+    first_index = left
+    second_index = right
+    third_index = down
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+  elif vertex in last_row:
+    first_index = left
+    second_index = right
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+  elif vertex%g_NUM_X_CELLS == 0:
+    first_index = down
+    second_index = right
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+  elif vertex%(g_NUM_X_CELLS-1) == 0:
+    first_index = left
+    second_index = down
+    third_index = up
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+  else:  #not first or last element or in first row or in last or in first column or last
+    first_index = left
+    second_index = down
+    third_index = up
+    fourth_index = right
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+    neighbors.append(fourth_index)
+  
+  return neighbors
 
 
 def run_dijkstra(source_vertex):
@@ -235,16 +235,10 @@ def run_dijkstra(source_vertex):
           prev[k] = -1
         else:
           length = vertex - source_vertex
-<<<<<<< HEAD
-          dist[i] = length + c
-          prev[i] = vertex
-  #what to do for no valid path?
-=======
           dist[k] = length + c
           print('total cost to dest:', dist[k])
           prev[k] = vertex
         print()
->>>>>>> bf6a65eaed3edd1a5035f33ef0dc756355677f00
 
   # Return results of algorithm run
   return prev
