@@ -124,16 +124,14 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
-  i,j = vertex_index_to_ij(vertex_source)
-  x,y = vertex_index_to_ij(vertex_dest)
-  if g_WORLD_MAP[i][j] == 1 or g_WORLD_MAP[x][y] == 1:
+  print('source:',vertex_source)
+  print('dest:',vertex_dest)
+  if g_WORLD_MAP[vertex_source] == 1 or g_WORLD_MAP[vertex_dest] == 1:
     cost_val = 1000
   else:
     cost_val = 1
 
   return cost_val
-
-
 
 def check_neighbors(vertex):
   first_row = list(range(g_NUM_X_CELLS))
@@ -236,6 +234,7 @@ def run_dijkstra(source_vertex):
           length = vertex - source_vertex
           dist[i] = length + c
           prev[i] = vertex
+  #what to do for no valid path?
 
   # Return results of algorithm run
   return prev
