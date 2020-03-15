@@ -37,10 +37,13 @@ def create_test_map(map_array):
   num_cells = len(map_array)
   new_map = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
-  for i in range(int(math.sqrt(len(map_array)))):
-    random_cell = random.randint(0, num_cells)
-    new_map[random_cell] = 1
-
+  #for i in range(int(math.sqrt(len(map_array)))):
+    #random_cell = random.randint(0, num_cells)
+    #new_map[random_cell] = 1
+  new_map[3] = 1
+  new_map[8] = 1
+  new_map[13] = 1
+  new_map[7] = 1
   return new_map
 
 
@@ -131,6 +134,8 @@ def get_travel_cost(vertex_source, vertex_dest):
   else:
     cost_val = 1
 
+  print('cost val: ', cost_val)
+
   return cost_val
 
 def check_neighbors(vertex):
@@ -138,53 +143,64 @@ def check_neighbors(vertex):
   last_row = list(range(((g_NUM_X_CELLS * g_NUM_Y_CELLS)-g_NUM_X_CELLS), (g_NUM_X_CELLS * g_NUM_Y_CELLS)))
   right = vertex + 1
   left = vertex - 1
-  down = vertex + g_NUM_X_CELLS
-  up = vertex - g_NUM_X_CELLS
+  down = vertex - g_NUM_X_CELLS
+  up = vertex + g_NUM_X_CELLS
   neighbors = []
 
   if vertex == 0:  #first element
-    first_index = down
+    first_index = up
     second_index = right  #check to the right and immediately below
     neighbors.append(first_index)
     neighbors.append(second_index)
   elif vertex == (g_NUM_X_CELLS * g_NUM_Y_CELLS -1): #last element
     first_index = left
-    second_index = up
+    second_index = down
     neighbors.append(first_index)
     neighbors.append(second_index)
   elif vertex in first_row:
-    first_index = left
+    first_index = up
+    second_index = right
+    third_index = left
+    neighbors.append(first_index)
+    neighbors.append(second_index)
+    neighbors.append(third_index)
+  elif vertex in last_row:
+    if vertex%g_NUM_X_CELLS == 0: #first column
+      second_index = right
+      third_index = down
+      neighbors.append(second_index)
+      neighbors.append(third_index)
+    elif (vertex+1)%(g_NUM_X_CELLS) == 0: #last column
+      first_index = left
+      third_index = down
+      neighbors.append(first_index)
+      neighbors.append(third_index)
+    else:
+      first_index = right
+      second_index = left
+      third_index = down
+      neighbors.append(first_index)
+      neighbors.append(second_index)
+      neighbors.append(third_index)
+  elif vertex%g_NUM_X_CELLS == 0: #first column
+    first_index = up
     second_index = right
     third_index = down
     neighbors.append(first_index)
     neighbors.append(second_index)
     neighbors.append(third_index)
-  elif vertex in last_row:
-    first_index = left
-    second_index = right
-    third_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  elif vertex%g_NUM_X_CELLS == 0:
-    first_index = down
-    second_index = right
-    third_index = up
-    neighbors.append(first_index)
-    neighbors.append(second_index)
-    neighbors.append(third_index)
-  elif vertex%(g_NUM_X_CELLS-1) == 0:
-    first_index = left
-    second_index = down
-    third_index = up
+  elif (vertex+1)%g_NUM_X_CELLS == 0: #last column
+    first_index = up
+    second_index = left
+    third_index = down
     neighbors.append(first_index)
     neighbors.append(second_index)
     neighbors.append(third_index)
   else:  #not first or last element or in first row or in last or in first column or last
-    first_index = left
-    second_index = down
-    third_index = up
-    fourth_index = right
+    first_index = up
+    second_index = right
+    third_index = left
+    fourth_index = down
     neighbors.append(first_index)
     neighbors.append(second_index)
     neighbors.append(third_index)
@@ -208,39 +224,101 @@ def run_dijkstra(source_vertex):
 
   # Queue for identifying which vertices are up to still be explored:
   # Will contain tuples of (vertex_index, cost), sorted such that the min cost is first to be extracted (explore cheapest/most promising vertices first)
-  Q_cost = [-1] * g_NUM_X_CELLS*g_NUM_Y_CELLS
+  Q_cost = [1500] * g_NUM_X_CELLS*g_NUM_Y_CELLS
+  #Q_cost = []
 
   # Array of ints for storing the next step (vertex_index) on the shortest path back to source_vertex for each vertex in the graph
   prev = [-1] * g_NUM_X_CELLS*g_NUM_Y_CELLS
+  min_vals = []
 
   # Insert your Dijkstra's code here. Don't forget to initialize Q_cost properly!
 
-  Q_cost[source_vertex] = 0
-  dist[source_vertex] = 0
+  #Q_cost[source_vertex] = 0
+  #dist[source_vertex] = 0
+  total_cost = 0
+  vertices = []
+  vertex = 0
 
-  overall_cost = 0
 
   for i in range(g_NUM_X_CELLS):
     for j in range(g_NUM_Y_CELLS):
-      vertex = ij_to_vertex_index(i,j)
-      neighbors = check_neighbors(vertex)
-      for k in neighbors:
-      	print('checking from ', vertex)
-      	print('to', k)
+      v = ij_to_vertex_index(j,i)
+      vertices.append(v)
+  print("vertices: ", vertices)
+  
+  while vertex != (len(vertices)-1):
+    neighbors = check_neighbors(vertex)
+    print("neighbors: ", neighbors)
+    for k in neighbors:
+      print('checking from ', vertex)
+      print('to', k)
 
-        c = get_travel_cost(source_vertex, k)
-        print('travel cost:', c)
-        if c == 1000:
-          dist[k] = 1000
-          prev[k] = -1
+      c = get_travel_cost(vertex, k)
+      print('travel cost:', c)
+        
+      if c == 1000:
+        Q_cost[k] = 1000
+        print('c = 1000')
+
+      else:
+        if k == 0:
+          length = 1500
         else:
-          length = vertex - source_vertex
-          dist[k] = length + c
-          print('total cost to dest:', dist[k])
-          prev[k] = vertex
-        print()
+          length = total_cost
+        Q_cost[k] = length + c
+        print('total cost to dest:', Q_cost[k])
 
-  # Return results of algorithm run
+    total_cost += 1
+
+    Q_cost = np.array(Q_cost)
+    #print("Q_COST::: ", Q_cost)
+    min_vals.append(np.partition(Q_cost, 1)[0:15])
+    min_vals = np.sort(min_vals[0])
+    print("min vals:", min_vals) #the four smallest values in the Q_cost array
+    checked = [0]
+    for mv in min_vals:
+      indices = [i for i, x in enumerate(Q_cost) if x == mv]
+      indices.reverse()
+      print("indices: ", indices)
+      for ind in indices:
+        if mv == 1500:
+          min_q = 1000
+          new_v = vertex
+          break
+        if prev[vertex] != ind and prev[ind] == -1 and ind != 0:
+          new_v = ind
+          min_q = mv
+          break
+        else:
+          checked.append(ind)
+          continue
+      break
+
+    print("min q: ", min_q)
+    print("new v: ", new_v)
+    if len(str(new_v)) > 1 and str(new_v)[0] != '1':
+      new_v = vertex
+      prev[new_v] = -1
+      dist[new_v] = 1000
+    elif min_q == 1000:
+      prev[new_v] = -1
+      dist[new_v] = 1000
+    elif vertex == (g_NUM_X_CELLS*g_NUM_Y_CELLS-1):
+      prev[new_v] = -1
+      dist[new_v] = 1000
+    else:
+      dist[new_v] = Q_cost[new_v]
+      prev[new_v] = vertex
+      #prev[k] = vertex
+
+    print()
+    Q_cost = [1500] * g_NUM_X_CELLS*g_NUM_Y_CELLS
+    min_vals = []
+    print("prev in while: ", prev, "\n")
+    vertex = new_v
+    print("final v: ", vertex)
+    
+  print("prev: ", prev)
   return prev
 
 
@@ -253,18 +331,32 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
   path from dest to source, return an empty list.
   '''
   final_path = [dest_vertex]
+  print("final path: ", final_path)
+  print("source vertex: ", source_vertex)
 
   current_vertex = dest_vertex
+  print("current_vertex before while: ", current_vertex)
 
 
   while current_vertex != source_vertex:
-  	current_vertex = prev[current_vertex]
-  	if current_vertex != -1:
-  		final_path.append(current_vertex)
-  	else:
-  		print('shit')
-  		return []
+    prev_vertex = prev[current_vertex]
+    if prev_vertex == current_vertex:
+      print("error: prev = current, will loop")
+      break
+    else:
+      current_vertex = prev_vertex
+    
+    print("current vertex in while: ", current_vertex)
+
+    if current_vertex != -1:
+      final_path.append(current_vertex)
+    else:
+      print("error: hit -1 in prev. this should not happen")
+      return []
+      
+    
   final_path.reverse()
+  print("final path at end: ", final_path)
   return final_path
 
 
@@ -319,9 +411,16 @@ def part_1():
   # Use render_map to render your initialized obstacle map
   render_map(g_WORLD_MAP)
 
+  print(g_WORLD_MAP)
+
   # Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
   print('global source:',ij_to_vertex_index( g_src_coordinates[0], g_src_coordinates[1]))
   prev = run_dijkstra(ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]))
+  print('before the final path')
+  print('g_src_coordinates[0]: ', g_src_coordinates[0])
+  print('g_src_coordinates[1]: ', g_src_coordinates[1])
+  print('g_dest_coordinates[0]: ', g_dest_coordinates[0])
+  print('g_dest_coordinates[1]: ', g_dest_coordinates[1])
   final_path = reconstruct_path(prev, 
   	ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]), 
   	ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]))
