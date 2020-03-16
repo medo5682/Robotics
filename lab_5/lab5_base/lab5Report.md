@@ -9,20 +9,26 @@ One example could be implementing a greedy search strategy that favors checking 
 
 ### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
  .  [ ]  .   . 
- 
- 
+  
 [ ]  .   .   . 
 
  .   .   .  [ ] 
+ 
  .   .   .  [ ] 
  
  12  13  14  15 
+ 
  8   9   10  11 
+ 
  4   5   6   7  
+ 
  0   1   2   3 
  
 Source: (0, 0)
+
 Goal: (3, 3)
+
+
 0 -> 4 -> 5 -> 9 -> 10 -> 14 -> 15
 
 (0,0) is the bottom left and (3,3) is top right. 
