@@ -17,10 +17,11 @@ MAP_SIZE_X = None
 MAP_SIZE_Y = None
 
 # Default parameters will create a 4x4 grid to test with
+scale = 80
 g_MAP_SIZE_X = 2. # 2m wide
 g_MAP_SIZE_Y = 1.5 # 1.5m tall
-g_MAP_RESOLUTION_X = 0.5/1 # Each col represents 50cm
-g_MAP_RESOLUTION_Y = 0.375/1 # Each row represents 37.5cm
+g_MAP_RESOLUTION_X = 0.5/scale # Each col represents 50cm
+g_MAP_RESOLUTION_Y = 0.375/scale # Each row represents 37.5cm
 g_NUM_X_CELLS = int(g_MAP_SIZE_X // g_MAP_RESOLUTION_X) # Number of columns in the grid map
 g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the grid map
 
@@ -37,13 +38,13 @@ def create_test_map(map_array):
   num_cells = len(map_array)
   new_map = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
-  #for i in range(int(math.sqrt(len(map_array)))):
-    #random_cell = random.randint(0, num_cells)
-    #new_map[random_cell] = 1
-  new_map[5] = 1
-  new_map[8] = 1
-  new_map[12] = 1
-  new_map[7] = 1
+  for i in range(int(math.sqrt(len(map_array)))):
+    random_cell = random.randint(0, num_cells-1)
+    new_map[random_cell] = 1
+  # new_map[5] = 1
+  # new_map[8] = 1
+  # new_map[12] = 1
+  # new_map[7] = 1
   return new_map
 
 
@@ -109,7 +110,7 @@ def xy_coordinates_to_ij_coordinates(x,y):
   returns (X, Y) coordinates in meters at the center of grid cell (i,j)
   '''
   global g_MAP_RESOLUTION_X, g_MAP_RESOLUTION_Y
-  return int(i // g_MAP_RESOLUTION_X), int(j // g_MAP_RESOLUTION_Y)
+  return int(x // g_MAP_RESOLUTION_X), int(y // g_MAP_RESOLUTION_Y)
 
 # **********************************
 # *      Core Dijkstra Functions   *
@@ -127,14 +128,14 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
-  print('source:',vertex_source)
-  print('dest:',vertex_dest)
+  # print('source:',vertex_source)
+  # print('dest:',vertex_dest)
   if g_WORLD_MAP[vertex_source] == 1 or g_WORLD_MAP[vertex_dest] == 1:
     cost_val = 1000
   else:
     cost_val = 1
 
-  print('cost val: ', cost_val)
+  # print('cost val: ', ost_val)
 
   return cost_val
 
@@ -240,7 +241,7 @@ def run_dijkstra(source_vertex):
         Q_cost.append((v, 1000))
       else:
         Q_cost.append((v,0))
-
+  # print(source_vertex)
   dist[source_vertex] = 0
   total_cost = 0
 
@@ -262,11 +263,11 @@ def run_dijkstra(source_vertex):
         prev[v] = u
         Q_cost = [my_tuple for my_tuple in Q_cost if my_tuple[0] != v]
         Q_cost.append((v, new_v))
-        print("q cost: ", Q_cost)
+        # print("q cost: ", Q_cost)
     total_cost += 1
 
-  print("final prev: ", prev)
-  print("final_dist: ", dist)
+  # print("final prev: ", prev)
+  # print("final_dist: ", dist)
   return(prev)
 
 
@@ -438,24 +439,52 @@ def part_2(args):
   		# update world map 
   		vertex = ij_to_vertex_index(i,j)
   		g_WORLD_MAP[vertex] = int(filled)
+  start_x = float(g_src_coordinates[0])
+  start_y = float(g_src_coordinates[1])
 
-  render_map(g_WORLD_MAP)
-  prev = run_dijkstra(ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]))
-  final_path = reconstruct_path(prev, 
-  	ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]), 
-  	ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]))
+  start_i, start_j = xy_coordinates_to_ij_coordinates(start_x, start_y)
+  start_vertex = ij_to_vertex_index(start_i, start_j)
+
+  end_x = float(g_dest_coordinates[0])
+  end_y = float(g_dest_coordinates[1])
+  end_i, end_j = xy_coordinates_to_ij_coordinates(end_x, end_y)
+  end_vertex= ij_to_vertex_index(end_i, end_j)
+
+  # render_map(g_WORLD_MAP)
+  print( start_vertex)
+  print( end_vertex)
+
+  prev = run_dijkstra(start_vertex)
+  final_path = reconstruct_path(prev, start_vertex, end_vertex)
+  print("FINAL:", final_path)
 
 
 # pixel_grid is indexed from the top
-  for vertex in final_path:
-   i,j  = vertex_index_to_ij(vertex)
-   x = int((i+0.5) * (num_pixels_x//g_NUM_X_CELLS)) #put dot in center of cell
-   y = int((j+0.5) * (num_pixels_y//g_NUM_Y_CELLS))
-   for k in range(-5, 5):# 5 pixel range around center
-   	for l in range(-5, 5):
-   		pixel_grid[ num_pixels_y - y + k ][ x + l ] = 0 # y = 0, starts at top, do an offset
+  if len(final_path) == 0: #draw start and end points
+  	box_size = 1
+  	start_x = int((start_i + 0.5) * (num_pixels_x//g_NUM_X_CELLS))
+  	start_y = int((start_j + 0.5) * (num_pixels_y//g_NUM_Y_CELLS))
 
-  title= "Optimal Path from " + str(g_src_coordinates) + " to " + str(g_dest_coordinates) + '.png'
+  	end_x = int((end_i + 0.5) * (num_pixels_x//g_NUM_X_CELLS))
+  	end_y = int((end_j + 0.5) * (num_pixels_y//g_NUM_Y_CELLS))
+
+  	for k in range(-box_size,box_size):
+  		for l in range(-box_size,box_size):
+ 			pixel_grid[ num_pixels_y  - start_y +k][ start_x + l] = 0
+ 	for k in range(-box_size,box_size):
+  		for l in range(-box_size,box_size):
+ 			pixel_grid[ num_pixels_y  - end_y +k][ end_x + l] = 0
+
+  else:
+	  for vertex in final_path:
+	   i,j  = vertex_index_to_ij(vertex)
+	   x = int((i+0.5) * (num_pixels_x//g_NUM_X_CELLS)) #put dot in center of cell
+	   y = int((j+0.5) * (num_pixels_y//g_NUM_Y_CELLS))
+	   for k in range(-5, 5):# 5 pixel range around center
+	   	for l in range(-5, 5):
+	   		pixel_grid[ num_pixels_y - y + k ][ x + l ] = 0 # y = 0, starts at top, do an offset
+
+  title= "Optimal Path from " + str(g_src_coordinates) + " to " + str(g_dest_coordinates) + args.obstacles+'.png'
   final_img = Image.fromarray(pixel_grid)
   final_img = final_img.convert("L")
   final_img.save(title)
@@ -469,5 +498,5 @@ if __name__ == "__main__":
   parser.add_argument('-o','--obstacles', nargs='?', type=str, default='obstacles_test1.png', help='Black and white image showing the obstacle locations')
   args = parser.parse_args()
 
-  part_1()
-  # part_2(args)
+  # part_1()
+  part_2(args)
