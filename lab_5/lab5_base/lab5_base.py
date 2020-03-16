@@ -256,7 +256,7 @@ def run_dijkstra(source_vertex):
         length = 2000
       else:
         length = 1
-      new_v = dist[u] + total_cost + length
+      new_v = dist[u] + length
       if new_v < dist[v]:
         dist[v] = new_v
         prev[v] = u
