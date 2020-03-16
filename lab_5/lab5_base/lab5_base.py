@@ -224,8 +224,8 @@ def run_dijkstra(source_vertex):
 
   # Queue for identifying which vertices are up to still be explored:
   # Will contain tuples of (vertex_index, cost), sorted such that the min cost is first to be extracted (explore cheapest/most promising vertices first)
-  Q_cost = [1500] * g_NUM_X_CELLS*g_NUM_Y_CELLS
-  #Q_cost = []
+  #Q_cost = [1000] * g_NUM_X_CELLS*g_NUM_Y_CELLS
+  Q_cost = []
 
   # Array of ints for storing the next step (vertex_index) on the shortest path back to source_vertex for each vertex in the graph
   prev = [-1] * g_NUM_X_CELLS*g_NUM_Y_CELLS
@@ -233,108 +233,41 @@ def run_dijkstra(source_vertex):
 
   # Insert your Dijkstra's code here. Don't forget to initialize Q_cost properly!
 
-  #Q_cost[source_vertex] = 0
-  #dist[source_vertex] = 0
-  total_cost = 0
-  vertices = []
-  vertex = 0
-
-
   for i in range(g_NUM_X_CELLS):
     for j in range(g_NUM_Y_CELLS):
       v = ij_to_vertex_index(j,i)
-      vertices.append(v)
-  print("vertices: ", vertices)
-  last_v = vertices[len(vertices)-1]
-  slv = str(last_v)
-  last_ind = slv[0]
-  
-  while vertex != (len(vertices)-1):
-    neighbors = check_neighbors(vertex)
-    print("neighbors: ", neighbors)
-    for k in neighbors:
-      print('checking from ', vertex)
-      print('to', k)
-
-      c = get_travel_cost(vertex, k)
-      print('travel cost:', c)
-        
-      if c == 1000:
-        Q_cost[k] = 1000
-        print('c = 1000')
-
+      if v != source_vertex:
+        Q_cost.append((v, 1000))
       else:
-        if k == 0:
-          length = 1500
-        else:
-          length = total_cost
-        Q_cost[k] = length + c
-        print('total cost to dest:', Q_cost[k])
+        Q_cost.append((v,0))
 
+  dist[source_vertex] = 0
+  total_cost = 0
+
+  while len(Q_cost) != 0:
+    u = min(Q_cost)
+    Q_cost = [my_tuple for my_tuple in Q_cost if my_tuple != u]
+    u = u[0]
+    neighbors = check_neighbors(u)
+    #print("neighbors: ", neighbors)
+    for v in neighbors:
+      c = get_travel_cost(u, v)
+      if c == 1000:
+        length = 2000
+      else:
+        length = 1
+      new_v = dist[u] + total_cost + length
+      if new_v < dist[v]:
+        dist[v] = new_v
+        prev[v] = u
+        Q_cost = [my_tuple for my_tuple in Q_cost if my_tuple[0] != v]
+        Q_cost.append((v, new_v))
+        print("q cost: ", Q_cost)
     total_cost += 1
 
-
-    Q_cost = np.array(Q_cost)
-    #print("Q_COST::: ", Q_cost)
-    min_vals.append(np.partition(Q_cost, 1)[0:15])
-    min_vals = np.sort(min_vals[0])
-    print("min vals:", min_vals) #the four smallest values in the Q_cost array
-    #check_vals = ((min_vals < 1000).sum() == min_vals.size).astype(np.int)
-    check_vals = (min_vals < 1000).sum()
-    # if check_vals == 0: 
-    #   Q_cost[vertex] = 1000
-    #   new_v = prev[vertex]
-    #   print("ugh: ", new_v)
-    # else:
-    checked = [0]
-    for mv in min_vals:
-      indices = [i for i, x in enumerate(Q_cost) if x == mv]
-      indices.reverse()
-      print("indices: ", indices)
-      for ind in indices:
-        if mv == 1500:
-          min_q = 1000
-          new_v = vertex
-          break
-        if prev[vertex] != ind and prev[ind] == -1 and ind != 0:
-          new_v = ind
-          min_q = mv
-          break
-        else:
-          checked.append(ind)
-          continue
-      break
-
-    print("min q: ", min_q)
-    print("new v: ", new_v)
-    if check_vals == 0:
-      print("check vals = 0")
-      dist[vertex] = 1000
-      new_v = prev[vertex]
-    elif len(str(new_v)) > 1 and str(new_v)[0] != last_ind:
-      new_v = vertex #this should probably be something else
-      prev[new_v] = -1
-      dist[new_v] = 1000
-    elif min_q == 1000:
-      prev[new_v] = -1
-      dist[new_v] = 1000
-    elif vertex == (g_NUM_X_CELLS*g_NUM_Y_CELLS-1):
-      prev[new_v] = -1
-      dist[new_v] = 1000
-    else:
-      dist[new_v] = Q_cost[new_v]
-      prev[new_v] = vertex
-      #prev[k] = vertex
-
-    print()
-    Q_cost = [1500] * g_NUM_X_CELLS*g_NUM_Y_CELLS
-    min_vals = []
-    print("prev in while: ", prev, "\n")
-    vertex = new_v
-    print("final v: ", vertex)
-    
-  print("prev: ", prev)
-  return prev
+  print("final prev: ", prev)
+  print("final_dist: ", dist)
+  return(prev)
 
 
 def reconstruct_path(prev, source_vertex, dest_vertex):
