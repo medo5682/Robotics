@@ -40,9 +40,9 @@ def create_test_map(map_array):
   #for i in range(int(math.sqrt(len(map_array)))):
     #random_cell = random.randint(0, num_cells)
     #new_map[random_cell] = 1
-  new_map[3] = 1
+  new_map[5] = 1
   new_map[8] = 1
-  new_map[13] = 1
+  new_map[12] = 1
   new_map[7] = 1
   return new_map
 
@@ -245,6 +245,9 @@ def run_dijkstra(source_vertex):
       v = ij_to_vertex_index(j,i)
       vertices.append(v)
   print("vertices: ", vertices)
+  last_v = vertices[len(vertices)-1]
+  slv = str(last_v)
+  last_ind = slv[0]
   
   while vertex != (len(vertices)-1):
     neighbors = check_neighbors(vertex)
@@ -270,11 +273,19 @@ def run_dijkstra(source_vertex):
 
     total_cost += 1
 
+
     Q_cost = np.array(Q_cost)
     #print("Q_COST::: ", Q_cost)
     min_vals.append(np.partition(Q_cost, 1)[0:15])
     min_vals = np.sort(min_vals[0])
     print("min vals:", min_vals) #the four smallest values in the Q_cost array
+    #check_vals = ((min_vals < 1000).sum() == min_vals.size).astype(np.int)
+    check_vals = (min_vals < 1000).sum()
+    # if check_vals == 0: 
+    #   Q_cost[vertex] = 1000
+    #   new_v = prev[vertex]
+    #   print("ugh: ", new_v)
+    # else:
     checked = [0]
     for mv in min_vals:
       indices = [i for i, x in enumerate(Q_cost) if x == mv]
@@ -296,8 +307,12 @@ def run_dijkstra(source_vertex):
 
     print("min q: ", min_q)
     print("new v: ", new_v)
-    if len(str(new_v)) > 1 and str(new_v)[0] != '1':
-      new_v = vertex
+    if check_vals == 0:
+      print("check vals = 0")
+      dist[vertex] = 1000
+      new_v = prev[vertex]
+    elif len(str(new_v)) > 1 and str(new_v)[0] != last_ind:
+      new_v = vertex #this should probably be something else
       prev[new_v] = -1
       dist[new_v] = 1000
     elif min_q == 1000:
