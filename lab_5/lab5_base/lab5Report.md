@@ -8,13 +8,13 @@ One example could be implementing a greedy search strategy that favors checking 
 
 
 ### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
- [ ] .   .   .  
+ [ ]  .    .    .  
  
-[ ]  .   .   .  
+[ ]   .    .    .  
 
- .  [ ]  .  [ ] 
+ .   [ ]   .   [ ] 
  
- .   .   .   .  
+ .    .    .    .  
  
  
  
