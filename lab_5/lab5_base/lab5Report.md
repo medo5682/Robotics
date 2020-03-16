@@ -8,7 +8,7 @@ One example could be implementing a greedy search strategy that favors checking 
 
 
 ### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
- [ ]  .    .    .  
+[ ]   .    .    .  
  
 [ ]   .    .    .  
 
@@ -34,21 +34,21 @@ It is represented in a 1D array where the index in the array represents the vert
 
 
 ### 4. [Part 1] Show sample output for the example used in Q2. ###
- .  [ ]  .   . 
+[ ] - . - . -  . 
   
-[ ]  .   .   . 
+[ ] - .  - . -  . 
 
- .   .   .  [ ] 
+ . -  .  - . - [ ] 
  
- .   .   .  [ ] 
+ . -  .  - . - [ ] 
  
- 12  13  14  15 
+ 12 - 13 - 14 - 15 
  
- 8   9   10  11 
+ 8 -  9  - 10 - 11 
  
- 4   5   6   7  
+ 4 -  5  - 6 -  7  
  
- 0   1   2   3 
+ 0  - 1  - 2  - 3 
  
 Source: (0, 0)
 
