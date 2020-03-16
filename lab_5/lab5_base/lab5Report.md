@@ -8,6 +8,32 @@ One example could be implementing a greedy search strategy that favors checking 
 
 
 ### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
+ [ ] .   .   .  
+ 
+[ ]  .   .   .  
+
+ .  [ ]  .  [ ] 
+ 
+ .   .   .   .  
+ 
+ 
+ 
+ 12  13  14  15 
+ 
+ 8   9   10  11 
+ 
+ 4   5   6   7 
+ 
+ 0   1   2   3 
+ 
+ 
+costs_from_vertex_0: [0, 1, 2, 3, 1, 1000, 3, 1000, 1000, 5, 4, 5, 1000, 6, 5, 6]
+
+It is represented in a 1D array where the index in the array represents the vertex it is referencing and the value of this index is the distance from the starting vertex
+
+
+
+### 4. [Part 1] Show sample output for the example used in Q2. ###
  .  [ ]  .   . 
   
 [ ]  .   .   . 
@@ -29,13 +55,9 @@ Source: (0, 0)
 Goal: (3, 3)
 
 
-0 -> 4 -> 5 -> 9 -> 10 -> 14 -> 15
+0 -> 1 -> 2 -> 6 -> 10 -> 11 -> 15
 
 (0,0) is the bottom left and (3,3) is top right. 
-
-
-### 4. [Part 1] Show sample output for the example used in Q2. ###
-
 
 ### 5. [Part 2] Show the paths on the images for the following 4 cases. ###
 #### a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
