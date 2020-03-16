@@ -12,3 +12,5 @@
 ### 5. [Part 2] Show the paths on the images for the following 4 cases.  ###
 
 ### 6. Roughly how much time did you spend programming this lab? ###
+
+
