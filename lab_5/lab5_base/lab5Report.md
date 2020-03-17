@@ -64,7 +64,7 @@ Goal: (3, 3)
 ![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_1.2_0.2_0.225_0.975_test1.png)
 
 #### b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
-![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_0.9_0.3_0.9_0.75_test1.png)
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/Op_0.9_0.3_0.9_0.75_test1.png)
 
 #### c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
 ![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_1.2_0.2_0.225_0.975_test2.png)
