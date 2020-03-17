@@ -37,13 +37,13 @@ def create_test_map(map_array):
   num_cells = len(map_array)
   new_map = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
-  #for i in range(int(math.sqrt(len(map_array)))):
-    #random_cell = random.randint(0, num_cells)
-    #new_map[random_cell] = 1
-  new_map[5] = 1
-  new_map[8] = 1
-  new_map[12] = 1
-  new_map[7] = 1
+  for i in range(int(math.sqrt(len(map_array)))):
+    random_cell = random.randint(0, num_cells)
+    new_map[random_cell] = 1
+  # new_map[3] = 1
+  # new_map[8] = 1
+  # new_map[13] = 1
+  # new_map[7] = 1
   return new_map
 
 
@@ -242,7 +242,6 @@ def run_dijkstra(source_vertex):
         Q_cost.append((v,0))
 
   dist[source_vertex] = 0
-  total_cost = 0
 
   while len(Q_cost) != 0:
     u = min(Q_cost)
@@ -256,14 +255,13 @@ def run_dijkstra(source_vertex):
         length = 2000
       else:
         length = 1
-      new_v = dist[u] + total_cost + length
+      new_v = dist[u] + length
       if new_v < dist[v]:
         dist[v] = new_v
         prev[v] = u
         Q_cost = [my_tuple for my_tuple in Q_cost if my_tuple[0] != v]
         Q_cost.append((v, new_v))
         print("q cost: ", Q_cost)
-    total_cost += 1
 
   print("final prev: ", prev)
   print("final_dist: ", dist)
