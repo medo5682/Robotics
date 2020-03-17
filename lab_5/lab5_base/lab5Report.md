@@ -8,28 +8,60 @@ One example could be implementing a greedy search strategy that favors checking 
 
 
 ### 3. [Part 1] Show sample output from Q1 (a 4x4 cost matrix given a start and destination state) ###
- .  [ ]  .   .  
-[ ]  .   .   .  
- .   .   .  [ ] 
- .   .   .  [ ] 
+[ ]   .    .    .  
+ 
+[ ]   .    .    .  
+
+ .   [ ]   .   [ ] 
+ 
+ .    .    .    .  
+ 
+ 
  
  12  13  14  15 
+ 
  8   9   10  11 
- 4   5   6   7  
+ 
+ 4   5   6   7 
+ 
  0   1   2   3 
  
-Source: (0, 0)
-Goal: (3, 3)
-0 -> 4 -> 5 -> 9 -> 10 -> 14 -> 15
+ 
+costs_from_vertex_0: [0, 1, 2, 3, 1, 1000, 3, 1000, 1000, 5, 4, 5, 1000, 6, 5, 6]
 
-(0,0) is the bottom left and (3,3) is top right. 
+It is represented in a 1D array where the index in the array represents the vertex it is referencing and the value of this index is the distance from the starting vertex
+
 
 
 ### 4. [Part 1] Show sample output for the example used in Q2. ###
+[ ] - . - . -  . 
+  
+[ ] - .  - . -  . 
 
+ . -  .  - . - [ ] 
+ 
+ . -  .  - . - [ ] 
+ 
+ 12 - 13 - 14 - 15 
+ 
+ 8 -  9  - 10 - 11 
+ 
+ 4 -  5  - 6 -  7  
+ 
+ 0  - 1  - 2  - 3 
+ 
+Source: (0, 0)
+
+Goal: (3, 3)
+
+
+0 -> 1 -> 2 -> 6 -> 10 -> 11 -> 15
+
+(0,0) is the bottom left and (3,3) is top right. 
 
 ### 5. [Part 2] Show the paths on the images for the following 4 cases. ###
 #### a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/Optimal Path from ('1.2', '0.2') to ('0.225', '0.975')obstacles_test1.png.png)
 #### b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
 #### c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
 #### d. obstacles_test2.png, source = (0.225, 0.6), goal = (1.35, 0.3) ####
