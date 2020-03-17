@@ -61,6 +61,7 @@ Goal: (3, 3)
 
 ### 5. [Part 2] Show the paths on the images for the following 4 cases. ###
 #### a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/Optimal Path from ('1.2', '0.2') to ('0.225', '0.975')obstacles_test1.png.png)
 #### b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
 #### c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
 #### d. obstacles_test2.png, source = (0.225, 0.6), goal = (1.35, 0.3) ####
