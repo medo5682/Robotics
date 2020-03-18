@@ -20,6 +20,8 @@ from math import sin, cos, radians, pi
 
 from graphics import *
 
+args=[]
+
 
 g_CYCLE_TIME = .100
 
@@ -42,7 +44,7 @@ g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as arr
 
 # GLOBALS 
 pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
-
+waypoints = []
 # Track servo angle in radians
 servo_angle = None
 
@@ -435,14 +437,40 @@ def part_2(args):
   print(final_x_y)
   return final_x_y
 
+
+
+def calcDistanceError(dest_pose_x,dest_pose_y):
+  dX = dest_pose_x - pose2d_sparki_odometry.x
+  dY = dest_pose_y - pose2d_sparki_odometry.y
+  d_err = math.sqrt((dX*dX) + (dY*dY))
+  return d_err
+
+
+def calcBearingError(dest_pose_x, dest_pose_y):
+  #atan2f returns radians, dest_pose_theta is in radians
+  b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
+  return b_err
+
+
 def main():
     global publisher_motor, publisher_odom, update_sim
     global IR_THRESHOLD, CYCLE_TIME
     global pose2d_sparki_odometry
 
     #Init your node to register it with the ROS core
-    init(args)
+    init()
+    current_waypoint_index = 0
     while not rospy.is_shutdown():
+    	time_start = time.time()
+    	if current_waypoint_index < len(waypoints)-1:
+    		dest_x = waypoints[current_waypoint_index][0]
+    		dest_y = waypoints[current_waypoint_index][1]
+
+    		bearing_error(dest_x, dest_y)
+    		distance_error(dest_x, dest_y)
+
+    		current_waypoint_index += 1
+
 
         time_end = time.time()
         rospy.sleep(CYCLE_TIME- (time_end-time_start))
@@ -454,6 +482,7 @@ def init(args):
     global subscriber_odometry, subscriber_state
     global pose2d_sparki_odometry
     global update_sim
+    global waypoints
     rospy.init_node('sparki', anonymous = True)
 
     #Set up your publishers and subscribers
@@ -494,13 +523,12 @@ def convert_robot_coords_to_world(x_r, y_r):
 
 
 if __name__ == "__main__":
+  global args
   parser = argparse.ArgumentParser(description="Dijkstra on image file")
   parser.add_argument('-s','--src_coordinates', nargs=2, default=[1.2, 0.2], help='Starting x, y location in world coords')
   parser.add_argument('-g','--dest_coordinates', nargs=2, default=[0.3, 0.7], help='Goal x, y location in world coords')
   parser.add_argument('-o','--obstacles', nargs='?', type=str, default='obstacles_test1.png', help='Black and white image showing the obstacle locations')
   args = parser.parse_args()
-
-  init(args)
   main()
 
 
