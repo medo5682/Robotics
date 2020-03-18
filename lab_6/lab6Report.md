@@ -13,8 +13,8 @@
 
 ### 3. Run your code for the 1.and 4.case from previous question and submit the videos for both. ###
 
-### 4. What are the names of everyone in your lab group?###
+### 4. What are the names of everyone in your lab group? ###
  
 
-### 5. Roughly how much time did you spend programming this lab?###
+### 5. Roughly how much time did you spend programming this lab? ###
 
