@@ -10,6 +10,17 @@ from PIL import Image
 import numpy as np
 from pprint import pprint
 
+import rospy
+import json
+import copy
+import time
+from geometry_msgs.msg import Pose2D
+from std_msgs.msg import Float32MultiArray, Empty, String, Int16
+from math import sin, cos, radians, pi
+
+from graphics import *
+
+
 g_CYCLE_TIME = .100
 
 # Parameters you might need to use which will be set automatically
@@ -28,24 +39,22 @@ g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the 
 # Map from Lab 4: values of 0 indicate free space, 1 indicates occupied space
 g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as array
 
-# Source and Destination (I,J) grid coordinates
-g_dest_coordinates = (3,3)
-g_src_coordinates = (0,0)
 
+# GLOBALS 
+pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
 
-def create_test_map(map_array):
-  # Takes an array representing a map of the world, copies it, and adds simulated obstacles
-  num_cells = len(map_array)
-  new_map = copy.copy(map_array)
-  # Add obstacles to up to sqrt(n) vertices of the map
-  for i in range(int(math.sqrt(len(map_array)))):
-    random_cell = random.randint(0, num_cells-1)
-    new_map[random_cell] = 1
-  # new_map[5] = 1
-  # new_map[8] = 1
-  # new_map[12] = 1
-  # new_map[7] = 1
-  return new_map
+# Track servo angle in radians
+servo_angle = None
+
+# Use these variables to hold your publishers and subscribers
+publisher_motor = None
+publisher_odom = None
+subscriber_odometry = None
+subscriber_state = None
+update_sim = None
+
+# CONSTANTS 
+CYCLE_TIME = 0.05 # In seconds
 
 
 def _load_img_to_intensity_matrix(img_filename):
@@ -364,19 +373,17 @@ def part_2(args):
   pixel_grid = _load_img_to_intensity_matrix(args.obstacles)
 
   '''
-  TODO -
   1) Compute the g_WORLD_MAP -- depending on the resolution, you need to decide if your cell is an obstacle cell or a free cell.
   2) Run Dijkstra's to get the plan
   3) Show your plan/path on the image
   Feel free to add more helper functions
   '''
 
-  #### Your code goes here ####
 
   #image size
   num_pixels_x = len(pixel_grid[0])
   num_pixels_y = len(pixel_grid)
-
+  #make g_WORLD_MAP
   for i in range(g_NUM_X_CELLS):
   	for j in range(g_NUM_Y_CELLS):
   		# coordinates of box to be searched for obstacles
@@ -397,6 +404,8 @@ def part_2(args):
   		# update world map 
   		vertex = ij_to_vertex_index(i,j)
   		g_WORLD_MAP[vertex] = int(filled)
+
+
   start_x = float(g_src_coordinates[0])
   start_y = float(g_src_coordinates[1])
 
@@ -412,48 +421,75 @@ def part_2(args):
   print( start_vertex)
   print( end_vertex)
 
+  #RUN DIJKSTRA
+
   prev = run_dijkstra(start_vertex)
   final_path = reconstruct_path(prev, start_vertex, end_vertex)
 
+  #RETURN WAYPOINTS
   final_x_y = []
   for vert in final_path:
   	i,j = vertex_index_to_ij(vert)
   	x,y = ij_coordinates_to_xy_coordinates(x,y)
   	final_x_y.append((x,y))
   print(final_x_y)
+  return final_x_y
+
+def main():
+    global publisher_motor, publisher_odom, update_sim
+    global IR_THRESHOLD, CYCLE_TIME
+    global pose2d_sparki_odometry
+
+    #Init your node to register it with the ROS core
+    init(args)
+    while not rospy.is_shutdown():
+
+        time_end = time.time()
+        rospy.sleep(CYCLE_TIME- (time_end-time_start))
 
 
 
+def init(args):
+    global publisher_motor, publisher_odom
+    global subscriber_odometry, subscriber_state
+    global pose2d_sparki_odometry
+    global update_sim
+    rospy.init_node('sparki', anonymous = True)
 
-# # pixel_grid is indexed from the top
-#   if len(final_path) == 0: #draw start and end points
-#   	box_size = 1
-#   	start_x = int((start_i + 0.5) * (num_pixels_x//g_NUM_X_CELLS))
-#   	start_y = int((start_j + 0.5) * (num_pixels_y//g_NUM_Y_CELLS))
+    #Set up your publishers and subscribers
+    subscriber_odometry = rospy.Subscriber('/sparki/odometry', Pose2D, callback_update_odometry)
+    subscriber_state = rospy.Subscriber('/sparki/state', String, callback_update_state)
+    publisher_motor = rospy.Publisher('/sparki/motor_command', Float32MultiArray, queue_size = 10);
+    publisher_odom = rospy.Publisher('/sparki/set_odometry', Pose2D, queue_size = 10)
+    update_sim = rospy.Publisher('/sparki/render_sim', Empty, queue_size = 10)
 
-#   	end_x = int((end_i + 0.5) * (num_pixels_x//g_NUM_X_CELLS))
-#   	end_y = int((end_j + 0.5) * (num_pixels_y//g_NUM_Y_CELLS))
+    rospy.sleep(1)
 
-#   	for k in range(-box_size,box_size):
-#   		for l in range(-box_size,box_size):
-#  			pixel_grid[ num_pixels_y  - start_y +k][ start_x + l] = 0
-#  	for k in range(-box_size,box_size):
-#   		for l in range(-box_size,box_size):
-#  			pixel_grid[ num_pixels_y  - end_y +k][ end_x + l] = 0
+    # Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
+    # Set sparki's servo to an angle pointing inward to the map (e.g., 45)
+    
+    waypoints = part2(args)
+    rospy.sleep(1)
+    update_sim.publish(Empty())    
 
-#   else:
-# 	  for vertex in final_path:
-# 	   i,j  = vertex_index_to_ij(vertex)
-# 	   x = int((i+0.5) * (num_pixels_x//g_NUM_X_CELLS)) #put dot in center of cell
-# 	   y = int((j+0.5) * (num_pixels_y//g_NUM_Y_CELLS))
-# 	   for k in range(-5, 5):# 5 pixel range around center
-# 	   	for l in range(-5, 5):
-# 	   		pixel_grid[ num_pixels_y - y + k ][ x + l ] = 0 # y = 0, starts at top, do an offset
+def callback_update_odometry(data):
+    # Receives geometry_msgs/Pose2D message
+    global pose2d_sparki_odometry
+    pose2d_sparki_odometry = Pose2D()
+    pose2d_sparki_odometry.x = data.x
+    pose2d_sparki_odometry.y = data.y
+    pose2d_sparki_odometry.theta = data.theta
 
-#   title= "Optimal Path from " + str(g_src_coordinates) + " to " + str(g_dest_coordinates) + args.obstacles+'.png'
-#   final_img = Image.fromarray(pixel_grid)
-#   final_img = final_img.convert("L")
-#   final_img.save(title)
+
+def convert_robot_coords_to_world(x_r, y_r):
+    # Using odometry, convert robot-centric coordinates into world coordinates
+    if x_r != None and y_r != None:
+    	x_w = -x_r * cos((pi/2)-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
+    	y_w =  x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos((pi/2)-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
+    else:
+    	x_w = None
+    	y_w = None
+    return x_w, y_w
 
 
 
@@ -464,5 +500,8 @@ if __name__ == "__main__":
   parser.add_argument('-o','--obstacles', nargs='?', type=str, default='obstacles_test1.png', help='Black and white image showing the obstacle locations')
   args = parser.parse_args()
 
-  # part_1()
-  part_2(args)
+  init(args)
+  main()
+
+
+
