@@ -6,22 +6,18 @@ import copy
 import math
 import random
 import argparse
-from PIL import Image
-import numpy as np
-from pprint import pprint
-
 import rospy
 import json
 import copy
 import time
+import numpy as np
+from PIL import Image
+from pprint import pprint
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 from math import sin, cos, radians, pi
 
-from graphics import *
-
 args=[]
-
 
 g_CYCLE_TIME = .100
 
@@ -30,7 +26,7 @@ MAP_SIZE_X = None
 MAP_SIZE_Y = None
 
 # Default parameters will create a 4x4 grid to test with
-scale = 2
+scale = 4
 g_MAP_SIZE_X = 2. # 2m wide
 g_MAP_SIZE_Y = 1.5 # 1.5m tall
 g_MAP_RESOLUTION_X = 0.5/scale # Each col represents 50cm
@@ -291,11 +287,11 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
   path from dest to source, return an empty list.
   '''
   final_path = [dest_vertex]
-  print("final path: ", final_path)
-  print("source vertex: ", source_vertex)
+  # print("final path: ", final_path)
+  # print("source vertex: ", source_vertex)
 
   current_vertex = dest_vertex
-  print("current_vertex before while: ", current_vertex)
+  # print("current_vertex before while: ", current_vertex)
 
 
   while current_vertex != source_vertex:
@@ -306,7 +302,7 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
     else:
       current_vertex = prev_vertex
     
-    print("current vertex in while: ", current_vertex)
+    # print("current vertex in while: ", current_vertex)
 
     if current_vertex != -1:
       final_path.append(current_vertex)
@@ -362,7 +358,35 @@ def render_map(map_array):
   	print(line_str)
 
 
-def part_2(args):
+
+def calcDistanceError(dest_pose_x,dest_pose_y):
+  dX = dest_pose_x - pose2d_sparki_odometry.x
+  dY = dest_pose_y - pose2d_sparki_odometry.y
+  d_err = math.sqrt((dX*dX) + (dY*dY))
+  return d_err
+
+def distance_error(dest_pose_x, dest_pose_y):
+	while calcDistanceError(dest_pose_x, dest_pose_y)>0:
+		msg = Float32MultiArray()
+		msg.data = [1.0, 1.0]
+		publisher_motor.publish(msg)
+		update_sim.publish(Empty())
+
+
+def calcBearingError(dest_pose_x, dest_pose_y):
+  #atan2f returns radians, dest_pose_theta is in radians
+  b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
+  return b_err
+
+def bearing_error(dest_pose_x, dest_pose_y):
+	while calcBearingError(dest_pose_x, dest_pose_y) > 0:
+		msg = Float32MultiArray()
+		msg.data = [-1.0, 1.0]
+		publisher_motor.publish(msg)
+		update_sim.publish(Empty())
+
+
+def part_2():
   global g_dest_coordinates
   global g_src_coordinates
   global g_WORLD_MAP
@@ -377,11 +401,8 @@ def part_2(args):
   '''
   1) Compute the g_WORLD_MAP -- depending on the resolution, you need to decide if your cell is an obstacle cell or a free cell.
   2) Run Dijkstra's to get the plan
-  3) Show your plan/path on the image
   Feel free to add more helper functions
   '''
-
-
   #image size
   num_pixels_x = len(pixel_grid[0])
   num_pixels_y = len(pixel_grid)
@@ -419,9 +440,10 @@ def part_2(args):
   end_i, end_j = xy_coordinates_to_ij_coordinates(end_x, end_y)
   end_vertex= ij_to_vertex_index(end_i, end_j)
 
+  print(start_vertex, end_vertex)
+
   render_map(g_WORLD_MAP)
-  print( start_vertex)
-  print( end_vertex)
+
 
   #RUN DIJKSTRA
 
@@ -432,30 +454,20 @@ def part_2(args):
   final_x_y = []
   for vert in final_path:
   	i,j = vertex_index_to_ij(vert)
-  	x,y = ij_coordinates_to_xy_coordinates(x,y)
+  	x,y = ij_coordinates_to_xy_coordinates(i,j)
   	final_x_y.append((x,y))
-  print(final_x_y)
+  	print('vertex:', vert, 'i:', i, 'j:', j, 'x:', x,'y:',y)
   return final_x_y
 
 
 
-def calcDistanceError(dest_pose_x,dest_pose_y):
-  dX = dest_pose_x - pose2d_sparki_odometry.x
-  dY = dest_pose_y - pose2d_sparki_odometry.y
-  d_err = math.sqrt((dX*dX) + (dY*dY))
-  return d_err
-
-
-def calcBearingError(dest_pose_x, dest_pose_y):
-  #atan2f returns radians, dest_pose_theta is in radians
-  b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
-  return b_err
-
-
-def main():
+def main(arg):
     global publisher_motor, publisher_odom, update_sim
     global IR_THRESHOLD, CYCLE_TIME
     global pose2d_sparki_odometry
+    global args
+
+    args = arg
 
     #Init your node to register it with the ROS core
     init()
@@ -463,41 +475,45 @@ def main():
     while not rospy.is_shutdown():
     	time_start = time.time()
     	if current_waypoint_index < len(waypoints)-1:
-    		dest_x = waypoints[current_waypoint_index][0]
-    		dest_y = waypoints[current_waypoint_index][1]
+    		dest_x = float(waypoints[current_waypoint_index][0])
+    		dest_y = float(waypoints[current_waypoint_index][1])
 
     		bearing_error(dest_x, dest_y)
     		distance_error(dest_x, dest_y)
 
     		current_waypoint_index += 1
 
-
         time_end = time.time()
         rospy.sleep(CYCLE_TIME- (time_end-time_start))
 
-
-
-def init(args):
+def init():
     global publisher_motor, publisher_odom
     global subscriber_odometry, subscriber_state
     global pose2d_sparki_odometry
     global update_sim
     global waypoints
+    global args
+
     rospy.init_node('sparki', anonymous = True)
 
     #Set up your publishers and subscribers
     subscriber_odometry = rospy.Subscriber('/sparki/odometry', Pose2D, callback_update_odometry)
-    subscriber_state = rospy.Subscriber('/sparki/state', String, callback_update_state)
     publisher_motor = rospy.Publisher('/sparki/motor_command', Float32MultiArray, queue_size = 10);
     publisher_odom = rospy.Publisher('/sparki/set_odometry', Pose2D, queue_size = 10)
     update_sim = rospy.Publisher('/sparki/render_sim', Empty, queue_size = 10)
 
     rospy.sleep(1)
 
+    initial_pose = Pose2D()
+    initial_pose.x = float(args.src_coordinates[0])
+    initial_pose.y = float(args.src_coordinates[1])
+    initial_pose.theta= float(90)
+    publisher_odom.publish(initial_pose)
+
     # Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
     # Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    
-    waypoints = part2(args)
+    waypoints = part_2()
+    print(waypoints)
     rospy.sleep(1)
     update_sim.publish(Empty())    
 
@@ -509,27 +525,13 @@ def callback_update_odometry(data):
     pose2d_sparki_odometry.y = data.y
     pose2d_sparki_odometry.theta = data.theta
 
-
-def convert_robot_coords_to_world(x_r, y_r):
-    # Using odometry, convert robot-centric coordinates into world coordinates
-    if x_r != None and y_r != None:
-    	x_w = -x_r * cos((pi/2)-pose2d_sparki_odometry.theta) + y_r * cos(pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.x
-    	y_w =  x_r * cos(pose2d_sparki_odometry.theta) + y_r * cos((pi/2)-pose2d_sparki_odometry.theta) + pose2d_sparki_odometry.y
-    else:
-    	x_w = None
-    	y_w = None
-    return x_w, y_w
-
-
-
 if __name__ == "__main__":
-  global args
   parser = argparse.ArgumentParser(description="Dijkstra on image file")
   parser.add_argument('-s','--src_coordinates', nargs=2, default=[1.2, 0.2], help='Starting x, y location in world coords')
   parser.add_argument('-g','--dest_coordinates', nargs=2, default=[0.3, 0.7], help='Goal x, y location in world coords')
   parser.add_argument('-o','--obstacles', nargs='?', type=str, default='obstacles_test1.png', help='Black and white image showing the obstacle locations')
   args = parser.parse_args()
-  main()
+  main(args)
 
 
 
