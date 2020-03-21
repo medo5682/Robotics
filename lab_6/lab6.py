@@ -15,7 +15,7 @@ from PIL import Image
 from pprint import pprint
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
-from math import sin, cos, radians, pi
+from math import sin, cos, radians, pi, degrees
 
 args=[]
 
@@ -37,6 +37,8 @@ g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the 
 # Map from Lab 4: values of 0 indicate free space, 1 indicates occupied space
 g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as array
 
+distance_tolerance = 0.015
+theta_tolerance = 0.02 # 1 degree
 
 # GLOBALS 
 pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
@@ -52,7 +54,7 @@ subscriber_state = None
 update_sim = None
 
 # CONSTANTS 
-CYCLE_TIME = 0.05 # In seconds
+CYCLE_TIME = 0.01 # In seconds
 
 
 def _load_img_to_intensity_matrix(img_filename):
@@ -357,7 +359,26 @@ def render_map(map_array):
   		line_str += ' ' + str(vertex) + ' '
   	print(line_str)
 
+	######################################
+	#        Movement functions          #
+	######################################
+			
+def print_coordinates(dest_pose_x,dest_pose_y):
+	i,j = xy_coordinates_to_ij_coordinates(pose2d_sparki_odometry.x, pose2d_sparki_odometry.y)
+  	curr_vertex = ij_to_vertex_index(i,j)
 
+  	endi, endj = xy_coordinates_to_ij_coordinates(dest_pose_x, dest_pose_y)
+  	end_vertex= ij_to_vertex_index(endi, endj)
+
+  	print('Pose:', pose2d_sparki_odometry.x, pose2d_sparki_odometry.y)
+  	print('Current vertex:',curr_vertex)
+  	print('Dest:', dest_pose_x, dest_pose_y)
+  	print('Dest vertex:', end_vertex)
+  	print('Current theta:',pose2d_sparki_odometry.theta)
+  	print('goal theta:', math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)))
+  	print('bearing error:',  calcBearingError(dest_pose_x, dest_pose_y))
+  	print('distance error:',calcDistanceError(dest_pose_x, dest_pose_y))
+  	print()
 
 def calcDistanceError(dest_pose_x,dest_pose_y):
   dX = dest_pose_x - pose2d_sparki_odometry.x
@@ -365,25 +386,51 @@ def calcDistanceError(dest_pose_x,dest_pose_y):
   d_err = math.sqrt((dX*dX) + (dY*dY))
   return d_err
 
-def distance_error(dest_pose_x, dest_pose_y):
-	while calcDistanceError(dest_pose_x, dest_pose_y)>0:
+def distance_error(dest_pose_x, dest_pose_y, index):
+	count = 0
+
+	# prev_distance_error = 1000 # larger than any distance error
+	current_distance_error = calcDistanceError(dest_pose_x, dest_pose_y)
+	#current_distance_error < prev_distance_error and
+	while  current_distance_error >distance_tolerance:
 		msg = Float32MultiArray()
 		msg.data = [1.0, 1.0]
 		publisher_motor.publish(msg)
 		update_sim.publish(Empty())
 
+		# prev_distance_error = current_distance_error
+		current_distance_error = calcDistanceError(dest_pose_x, dest_pose_y)
+
+		if count%100 == 0:
+			print_coordinates(dest_pose_x, dest_pose_y)
+		count+=1
 
 def calcBearingError(dest_pose_x, dest_pose_y):
-  #atan2f returns radians, dest_pose_theta is in radians
-  b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
-  return b_err
+	#atan2 returns radians, dest_pose_theta is in radians                                            
+	b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
+	return b_err
 
 def bearing_error(dest_pose_x, dest_pose_y):
-	while calcBearingError(dest_pose_x, dest_pose_y) > 0:
+	count =0
+	bearing_error = calcBearingError(dest_pose_x, dest_pose_y)
+	print(bearing_error)
+	print(theta_tolerance)
+	print(abs(bearing_error)>theta_tolerance)
+	while abs(bearing_error) > theta_tolerance:
 		msg = Float32MultiArray()
-		msg.data = [-1.0, 1.0]
+		if bearing_error > 0:
+			msg.data = [1.0, -1.0]
+		else:
+			msg.data = [-1.0, 1.0]
 		publisher_motor.publish(msg)
 		update_sim.publish(Empty())
+		bearing_error = calcBearingError(dest_pose_x, dest_pose_y)
+
+		if count%100 == 0:
+	  		print_coordinates(dest_pose_x, dest_pose_y)
+		count+=1
+
+
 
 
 def part_2():
@@ -424,7 +471,7 @@ def part_2():
   					pixel_grid[y][x] = 0 #recolor to black for export
   				else:
   					pixel_grid[y][x] = 255 #recolor to white for export
-  		# update world map 
+  		# update world map c
   		vertex = ij_to_vertex_index(i,j)
   		g_WORLD_MAP[vertex] = int(filled)
 
@@ -440,13 +487,11 @@ def part_2():
   end_i, end_j = xy_coordinates_to_ij_coordinates(end_x, end_y)
   end_vertex= ij_to_vertex_index(end_i, end_j)
 
-  print(start_vertex, end_vertex)
+  # print(start_vertex, end_vertex)
 
-  render_map(g_WORLD_MAP)
-
+  # render_map(g_WORLD_MAP)
 
   #RUN DIJKSTRA
-
   prev = run_dijkstra(start_vertex)
   final_path = reconstruct_path(prev, start_vertex, end_vertex)
 
@@ -456,9 +501,7 @@ def part_2():
   	i,j = vertex_index_to_ij(vert)
   	x,y = ij_coordinates_to_xy_coordinates(i,j)
   	final_x_y.append((x,y))
-  	print('vertex:', vert, 'i:', i, 'j:', j, 'x:', x,'y:',y)
   return final_x_y
-
 
 
 def main(arg):
@@ -471,7 +514,7 @@ def main(arg):
 
     #Init your node to register it with the ROS core
     init()
-    current_waypoint_index = 0
+    current_waypoint_index = 1 # don't make it go to start index first
     while not rospy.is_shutdown():
     	time_start = time.time()
     	if current_waypoint_index < len(waypoints)-1:
@@ -479,7 +522,7 @@ def main(arg):
     		dest_y = float(waypoints[current_waypoint_index][1])
 
     		bearing_error(dest_x, dest_y)
-    		distance_error(dest_x, dest_y)
+    		distance_error(dest_x, dest_y, current_waypoint_index)
 
     		current_waypoint_index += 1
 
@@ -501,20 +544,19 @@ def init():
     publisher_motor = rospy.Publisher('/sparki/motor_command', Float32MultiArray, queue_size = 10);
     publisher_odom = rospy.Publisher('/sparki/set_odometry', Pose2D, queue_size = 10)
     update_sim = rospy.Publisher('/sparki/render_sim', Empty, queue_size = 10)
-
     rospy.sleep(1)
 
     initial_pose = Pose2D()
     initial_pose.x = float(args.src_coordinates[0])
     initial_pose.y = float(args.src_coordinates[1])
-    initial_pose.theta= float(90)
+    initial_pose.theta= 0.0
     publisher_odom.publish(initial_pose)
+    print('set to 0 degrees')
 
     # Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
     # Set sparki's servo to an angle pointing inward to the map (e.g., 45)
     waypoints = part_2()
     print(waypoints)
-    rospy.sleep(1)
     update_sim.publish(Empty())    
 
 def callback_update_odometry(data):
