@@ -26,7 +26,7 @@ MAP_SIZE_X = None
 MAP_SIZE_Y = None
 
 # Default parameters will create a 4x4 grid to test with
-scale = 4
+scale = 16
 g_MAP_SIZE_X = 2. # 2m wide
 g_MAP_SIZE_Y = 1.5 # 1.5m tall
 g_MAP_RESOLUTION_X = 0.5/scale # Each col represents 50cm
@@ -37,7 +37,7 @@ g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the 
 # Map from Lab 4: values of 0 indicate free space, 1 indicates occupied space
 g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as array
 
-distance_tolerance = 0.015
+distance_tolerance = 0.005
 theta_tolerance = 0.02 # 1 degree
 
 # GLOBALS 
@@ -408,20 +408,24 @@ def distance_error(dest_pose_x, dest_pose_y, index):
 def calcBearingError(dest_pose_x, dest_pose_y):
 	#atan2 returns radians, dest_pose_theta is in radians                                            
 	b_err = math.atan2((dest_pose_y -pose2d_sparki_odometry.y),(dest_pose_x- pose2d_sparki_odometry.x)) - pose2d_sparki_odometry.theta
-	return b_err
+	errs = [abs(b_err), abs(b_err + 2*pi), abs(b_err - 2*pi)]
+	tru_errs= [b_err, b_err + 2*pi, b_err - 2*pi]
+	return tru_errs[np.argmin(errs)]
+
+def decide_direction(berr):
+	if berr > 0: #rotate cccw
+		data = [1.0, -1.0]
+	else:   #rotate cw
+		data = [-1.0, 1.0]
+	return data
+
 
 def bearing_error(dest_pose_x, dest_pose_y):
 	count =0
 	bearing_error = calcBearingError(dest_pose_x, dest_pose_y)
-	print(bearing_error)
-	print(theta_tolerance)
-	print(abs(bearing_error)>theta_tolerance)
 	while abs(bearing_error) > theta_tolerance:
 		msg = Float32MultiArray()
-		if bearing_error > 0:
-			msg.data = [1.0, -1.0]
-		else:
-			msg.data = [-1.0, 1.0]
+		msg.data = decide_direction(bearing_error)
 		publisher_motor.publish(msg)
 		update_sim.publish(Empty())
 		bearing_error = calcBearingError(dest_pose_x, dest_pose_y)
@@ -525,6 +529,9 @@ def main(arg):
     		distance_error(dest_x, dest_y, current_waypoint_index)
 
     		current_waypoint_index += 1
+    	else:
+    		rospy.signal_shutdown('all done')
+    		print(waypoints)
 
         time_end = time.time()
         rospy.sleep(CYCLE_TIME- (time_end-time_start))
