@@ -61,11 +61,18 @@ Goal: (3, 3)
 
 ### 5. [Part 2] Show the paths on the images for the following 4 cases. ###
 #### a. obstacles_test1.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
-![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/Optimal Path from ('1.2', '0.2') to ('0.225', '0.975')obstacles_test1.png.png)
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_1.2_0.2_0.225_0.975_test1.png)
+
 #### b. obstacles_test1.png, source = (0.9, 0.3), goal = (0.9, 0.75) ####
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/Op_0.9_0.3_0.9_0.75_test1.png)
+
 #### c. obstacles_test2.png, source = (1.2, 0.2), goal = (0.225, 0.975) ####
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_1.2_0.2_0.225_0.975_test2.png)
+
 #### d. obstacles_test2.png, source = (0.225, 0.6), goal = (1.35, 0.3) ####
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_5/lab5_base/op_0.225_0.6_1.35_0.3_test2.png)
 
 
 ### 6. Roughly how much time did you spend programming this lab? ###
 
+We spent roughly 5 hours on this lab
