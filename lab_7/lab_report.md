@@ -7,6 +7,12 @@
 Benji has this one I think?
 
 ### 3. Part 2.4 - What is the map’s resolution in terms of meters per pixel? Also what is the pose of the map’s lower-left corner with respect to the world frame? ###
+The map's resolution in terms of meters per pixel is 0.05m/pixel. 
+
+The pose of the map's lower-left corner with respect to the world frame is [-10, -10, 0] ?
+
+
+The origin says: origin: [-10.000000, -10.000000, 0.000000] The origin of the map server is defined as: The 2-D pose of the lower-left pixel in the map, as (x, y, yaw), with yaw as counterclockwise rotation (yaw=0 means no rotation). Many parts of the system currently ignore yaw.  
 
 
 ### 4. What is the default initial pose set in Part 3.2? ###
