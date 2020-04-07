@@ -13,6 +13,9 @@ def main(args):
 	header.stamp = rospy.Time.now()
 	header.frame_id = 'map'
 
+	print("y arg: ", args.y_goal)
+	print("x arg: ", args.x_goal)
+
 	point = Point()
 	point.x = float(args.x_goal[0])
 	point.y = float(args.y_goal[0])
@@ -41,8 +44,8 @@ def main(args):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Gazebo")
-  parser.add_argument('-x','--x_goal', nargs=1, default=0, help='goal x')
-  parser.add_argument('-y','--y_goal', nargs=1, default=0, help='goal y ')
-  parser.add_argument('-theta','--theta_goal', nargs='?',  default=0, help='goal theta in quaternions')
+  parser.add_argument('-x','--x_goal', nargs=1, default=['-2.0'], help='goal x')
+  parser.add_argument('-y','--y_goal', nargs=1, default=['-0.5'], help='goal y ')
+  parser.add_argument('-theta','--theta_goal', nargs='?',  default=['0'], help='goal theta in quaternions')
   args = parser.parse_args()
   main(args)
