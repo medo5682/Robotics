@@ -4,8 +4,7 @@
 View the video [here](https://drive.google.com/file/d/19yhrfMNlGB2-_q3Gm7kUTO1Je-MWaAnM/view?usp=sharing)
 
 ### 2. Part 2.3 - Provide a screenshot of the mapping midway through the process where you haven't mapped the complete world. ###
-
-View the picture [here](https://github.com/medo5682/Robotics/edit/master/lab_7/camera_rviz.png)
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_7/partwaythroughmapmaking.png)
 
 ### 3. Part 2.4 - What is the map’s resolution in terms of meters per pixel? Also what is the pose of the map’s lower-left corner with respect to the world frame? ###
 The map's resolution in terms of meters per pixel is 0.05m/pixel. 
@@ -39,6 +38,9 @@ X.launch ---- Y.launch
  
 ### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ###
 ### 7. Provide a screenshot of your camera running in Rviz from Part 4. ###
-View the picture [here](https://github.com/medo5682/Robotics/blob/master/lab_7/partwaythroughmapmaking.png)
+
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_7/camera_rviz.png)
+
+
 ### 8. What are the new topics that spawned after launching turtlebot3_navigation.launch? ###
 ### 9. How much time did you spend doing this lab? ###
