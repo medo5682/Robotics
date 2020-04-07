@@ -1,6 +1,7 @@
 # Lab 7 Report #
 
 ###  1. Run your python code for x = 0.5 and theta = 1.0 (note that the rotation is provided in a rather weird way. It’s represented as a Quaternion which is a popular way to represent angles). For example this could look like - yourCode.py -x 0.5 -theta 1.0 Make the video of the robot starting and reaching the goal. ###
+View the video [here](https://drive.google.com/file/d/19yhrfMNlGB2-_q3Gm7kUTO1Je-MWaAnM/view?usp=sharing)
 
 ### 2. Part 2.3 - Provide a screenshot of the mapping midway through the process where you haven't mapped the complete world. ###
 
