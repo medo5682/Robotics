@@ -4,8 +4,7 @@
 View the video [here](https://drive.google.com/file/d/19yhrfMNlGB2-_q3Gm7kUTO1Je-MWaAnM/view?usp=sharing)
 
 ### 2. Part 2.3 - Provide a screenshot of the mapping midway through the process where you haven't mapped the complete world. ###
-
-View the picture [here](https://github.com/medo5682/Robotics/edit/master/lab_7/camera_rviz.png)
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_7/partwaythroughmapmaking.png)
 
 ### 3. Part 2.4 - What is the map’s resolution in terms of meters per pixel? Also what is the pose of the map’s lower-left corner with respect to the world frame? ###
 The map's resolution in terms of meters per pixel is 0.05m/pixel. 
@@ -25,20 +24,25 @@ z initial pose: 0.0
 
 ### 5. What are the launch files that are launched hierarchically when you launch turtlebot3_world.launch and turtlebot3_navigation.launch. Provide your answers for both the files in an hierarchical format. ###
 
-For example -
+(1) turtlebot3_world.launch ----  
 
+ |-- empty_world.launch 
 
-X.launch ---- Y.launch
+(2) turtlebot3_navigation.launch ---- 
+
+ |-- turtlebot3_remote.launch 
  
- |-- Z.launch
+ |-- amcl.launch 
  
- |-- A.launch
+ |-- move_base.launch
  
- |--B.launch
- 
- 
-### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ###
+### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ### 
+The empty_world.launch file is a script that is mainly executing the Gazebo executable usring a default world file, "empty.world." This default file holds the basic features of the Gazebo simulator. The turtlebot3_remote.launch essentially publishes the state of the robot to tf with the necessary robot information, as it includes the robot_model and robot state publisher node. The amcl.launch file uses amcl (a localization system) to take in a laser maps, scans to transform messages, and ultimatley outputs the pose values. The move_base.launch file (which contains interface to the navigation stack) allows to accomplish the navigation task, using laser and odometry data. 
+
 ### 7. Provide a screenshot of your camera running in Rviz from Part 4. ###
-View the picture [here](https://github.com/medo5682/Robotics/blob/master/lab_7/partwaythroughmapmaking.png)
+
+![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_7/camera_rviz.png)
+
+
 ### 8. What are the new topics that spawned after launching turtlebot3_navigation.launch? ###
 ### 9. How much time did you spend doing this lab? ###
