@@ -45,4 +45,61 @@ The empty_world.launch file is a script that is mainly executing the Gazebo exec
 
 
 ### 8. What are the new topics that spawned after launching turtlebot3_navigation.launch? ###
+### Please check this ### I feel like there are too many here, but this is what comes up when i do rostopic list after launching just the turtlebot3_navigation.launch file
+/amcl/parameter_descriptions
+
+/amcl/parameter_updates
+
+/amcl_pose
+
+/cmd_vel
+
+/diagnostics
+
+/initialpose
+
+/joint_states
+
+/map
+
+/map_metadata
+
+/map_updates
+
+/move_base/DWAPlannerROS/global_plan
+
+/move_base/DWAPlannerROS/local_plan
+
+/move_base/NavfnROS/plan
+
+/move_base/current_goal
+
+/move_base/global_costmap/costmap
+
+/move_base/global_costmap/costmap_updates
+
+/move_base/goal
+
+/move_base/local_costmap/costmap
+
+/move_base/local_costmap/costmap_updates
+
+/move_base/local_costmap/footprint
+
+/move_base_simple/goal
+
+/particlecloud
+
+/rosout
+
+/rosout_agg
+
+/scan
+
+/tf
+
+/tf_static
+
 ### 9. How much time did you spend doing this lab? ###
+
+4 hours
