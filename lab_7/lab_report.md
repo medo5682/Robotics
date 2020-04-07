@@ -1,10 +1,11 @@
 # Lab 7 Report #
 
 ###  1. Run your python code for x = 0.5 and theta = 1.0 (note that the rotation is provided in a rather weird way. It’s represented as a Quaternion which is a popular way to represent angles). For example this could look like - yourCode.py -x 0.5 -theta 1.0 Make the video of the robot starting and reaching the goal. ###
+View the video [here](https://drive.google.com/file/d/19yhrfMNlGB2-_q3Gm7kUTO1Je-MWaAnM/view?usp=sharing)
 
 ### 2. Part 2.3 - Provide a screenshot of the mapping midway through the process where you haven't mapped the complete world. ###
 
-Benji has this one I think?
+View the picture [here](https://github.com/medo5682/Robotics/edit/master/lab_7/camera_rviz.png)
 
 ### 3. Part 2.4 - What is the map’s resolution in terms of meters per pixel? Also what is the pose of the map’s lower-left corner with respect to the world frame? ###
 The map's resolution in terms of meters per pixel is 0.05m/pixel. 
@@ -38,5 +39,6 @@ X.launch ---- Y.launch
  
 ### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ###
 ### 7. Provide a screenshot of your camera running in Rviz from Part 4. ###
+View the picture [here](https://github.com/medo5682/Robotics/blob/master/lab_7/partwaythroughmapmaking.png)
 ### 8. What are the new topics that spawned after launching turtlebot3_navigation.launch? ###
 ### 9. How much time did you spend doing this lab? ###
