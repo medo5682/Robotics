@@ -36,10 +36,9 @@ z initial pose: 0.0
  
  |-- move_base.launch
  
+### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ### 
+The empty_world.launch file is a script that is mainly executing the Gazebo executable usring a default world file, "empty.world." This default file holds the basic features of the Gazebo simulator. The turtlebot3_remote.launch essentially publishes the state of the robot to tf with the necessary robot information, as it includes the robot_model and robot state publisher node. The amcl.launch file uses amcl (a localization system) to take in a laser maps, scans to transform messages, and ultimatley outputs the pose values. The move_base.launch file (which contains interface to the navigation stack) allows to accomplish the navigation task, using laser and odometry data. 
 
- 
- 
-### 6. Write a one-line summary describing the main function of each of the launch files that you mention above. ###
 ### 7. Provide a screenshot of your camera running in Rviz from Part 4. ###
 
 ![alt text](https://raw.githubusercontent.com/medo5682/Robotics/master/lab_7/camera_rviz.png)
