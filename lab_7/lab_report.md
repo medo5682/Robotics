@@ -24,23 +24,11 @@ z initial pose: 0.0
 
 ### 5. What are the launch files that are launched hierarchically when you launch turtlebot3_world.launch and turtlebot3_navigation.launch. Provide your answers for both the files in an hierarchical format. ###
 
-For example -
-
-
-X.launch ---- Y.launch
- 
- |-- Z.launch
- 
- |-- A.launch
- 
- |--B.launch 
- 
-
-turtlebot3_world.launch ----  
+(1) turtlebot3_world.launch ----  
 
  |-- empty_world.launch 
 
-turtlebot3_navigation.launch ---- 
+(2) turtlebot3_navigation.launch ---- 
 
  |-- turtlebot3_remote.launch 
  
