@@ -1,0 +1,13 @@
+<launch>
+  <arg name="map_file" default="/home/medo/map_2.yaml" />
+  <arg name="map_keepout_file" default="/home/medo/keepout.yaml" />
+  <arg name="use_keepout" default="false" />\
+
+  <include file="$(find fetch_navigation)/launch/fetch_nav.launch" >
+    <arg name="map_file" value="/home/medo/map_2.yaml" />
+    <arg name="map_keepout_file" value="/home/medo/keepout.yaml" />
+    <arg name="use_keepout" value="false" />
+  </include>
+  
+  <node pkg="rviz" type="rviz" name="$(anon rviz)" args="-d /home/medo/.rviz/fetch_robot.rviz" />
+</launch>
