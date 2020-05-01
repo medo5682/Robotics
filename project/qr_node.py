@@ -10,6 +10,7 @@ from std_msgs.msg import Header
 
 
 item_publisher = None
+seq= None
 
 # modified from https://www.pyimagesearch.com/2018/05/21/an-opencv-barcode-and-qr-code-scanner-with-zbar/ and http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
 def getItemsFromQR(data):
@@ -23,6 +24,7 @@ def getItemsFromQR(data):
 
 	header=Header()
 	header.stamp = rospy.Time.now()
+	header.seq = seq
 
 	for qrcode in qrcodes:
 		(x, y, w, h) = qrcode.rect
@@ -50,7 +52,8 @@ def getItemsFromQR(data):
 	
 
 def main():	
-	global item_publisher
+	global item_publisher, seq
+	seq = 0
 	rospy.init_node('qrcodereader', anonymous =True)
 	item_publisher = rospy.Publisher('ItemsInVision', Header, queue_size = 10)
 	rospy.Subscriber('head_camera/rgb/image_raw', Image, getItemsFromQR)
