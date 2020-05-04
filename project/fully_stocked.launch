@@ -1,6 +1,14 @@
-launch>
+<launch>
 
-  <env name="GAZEBO_MODEL_PATH" value="$(find fetch_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)" />
+  <env name="GAZEBO_MODEL_PATH" value="$(find fetch_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)" /> -->
+
+  <!-- <include file="$(find fetch_navigation)/launch/fetch_nav.launch" >
+    <arg name="map_file" value="/home/medo/map_2.yaml" />
+  </include> -->
+
+  <arg name="map_file" value="/home/medo/new_map.yaml" />
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
 
   <arg name="robot" default="fetch"/>
   <arg name="debug" default="false"/>
@@ -17,8 +25,22 @@ launch>
     <arg name="world_name" value="$(find fetch_gazebo)/worlds/FullyStocked.sdf"/>
   </include>
 
+  
+
   <!-- Oh, you wanted a robot? -->
-  <include file="$(find fetch_gazebo)/launch/include/$(arg robot).launch.xml" />
+ <include file="$(find fetch_gazebo)/launch/include/$(arg robot).launch.xml" />
+
+ <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
 
 </launch>
+
+<!--  
+<launch>
+
+  <include file="$(find fetch_navigation)/launch/fetch_nav.launch" >
+    <arg name="map_file" value="/home/medo/map_2.yaml" />
+  </include>
+
+</launch> -->
 
