@@ -1,0 +1,8 @@
+prefix=/home/gayathrigude/catkin_ws/install
+
+Name: MoveIT
+Description: Description of MoveIT
+Version: 0.3.0
+Cflags: 
+Libs: -L/home/gayathrigude/catkin_ws/install/lib 
+Requires: 
